@@ -220,7 +220,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </div>
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
+  window.addEventListener("load", () => {
     const tocContainer = document.querySelector("#page-toc");
     if (!tocContainer) return;
     const sections = Array.from(document.querySelectorAll("main.content section[id]"));
@@ -257,7 +257,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="carga-del-dataset" class="level2">
 <h2 class="anchored" data-anchor-id="carga-del-dataset">Carga del dataset</h2>
 <p>En esta etapa se cargó el dataset original de producción eléctrica por fuente, con información anual para múltiples países y regiones. Las variables principales incluyeron el nombre de la entidad, el año y la generación eléctrica por distintas fuentes.</p>
-<div id="320aa4a4" class="cell" data-execution_count="1">
+<div id="b7b422fd" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -371,7 +371,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="exploración-inicial" class="level2">
 <h2 class="anchored" data-anchor-id="exploración-inicial">Exploración inicial</h2>
 <p>Se realizó una revisión inicial del tamaño del dataset, los nombres de las columnas, el rango temporal y las entidades disponibles.</p>
-<div id="5bd54074" class="cell" data-execution_count="2">
+<div id="9b7a794b" class="cell" data-execution_count="2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Dimensiones:"</span>, df.shape)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Columnas:"</span>, df.columns.tolist())</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Años:"</span>, df[<span class="st">"Year"</span>].<span class="bu">min</span>(), <span class="st">"-"</span>, df[<span class="st">"Year"</span>].<span class="bu">max</span>())</span>
@@ -384,7 +384,7 @@ Número de entidades: 253</code></pre>
 </div>
 </div>
 <p>También se identificaron los tipos de datos:</p>
-<div id="1c1d8496" class="cell" data-execution_count="3">
+<div id="caf93d8f" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>df.dtypes</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="3">
 <pre><code>Entity               object
@@ -416,7 +416,7 @@ dtype: object</code></pre>
 <li>Wind</li>
 <li>Solar</li>
 </ul>
-<div id="afdd6a9d" class="cell" data-execution_count="4">
+<div id="bdcf97e9" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fuentes <span class="op">=</span> [<span class="st">"Coal"</span>, <span class="st">"Gas"</span>, <span class="st">"Oil"</span>, <span class="st">"Nuclear"</span>, <span class="st">"Hydropower"</span>, <span class="st">"Wind"</span>, <span class="st">"Solar"</span>]</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>columnas_base <span class="op">=</span> [<span class="st">"Entity"</span>, <span class="st">"Code"</span>, <span class="st">"Year"</span>] <span class="op">+</span> fuentes</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[columnas_base].copy()</span>
@@ -517,7 +517,7 @@ dtype: object</code></pre>
 <section id="selección-de-países-y-periodo-de-análisis" class="level2">
 <h2 class="anchored" data-anchor-id="selección-de-países-y-periodo-de-análisis">Selección de países y periodo de análisis</h2>
 <p>Para mantener la visualización legible y comparativa, se seleccionaron cinco continentes y cinco países por continente. Además, se restringió el análisis al periodo 1990–2024 para trabajar con más de tres décadas de información y reducir problemas de cobertura incompleta en años más antiguos.</p>
-<div id="6b288739" class="cell" data-execution_count="5">
+<div id="8e02af73" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>paises_por_continente <span class="op">=</span> {</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Africa"</span>: [<span class="st">"South Africa"</span>, <span class="st">"Egypt"</span>, <span class="st">"Algeria"</span>, <span class="st">"Morocco"</span>, <span class="st">"Nigeria"</span>],</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Asia"</span>: [<span class="st">"China"</span>, <span class="st">"India"</span>, <span class="st">"Japan"</span>, <span class="st">"South Korea"</span>, <span class="st">"Indonesia"</span>],</span>
@@ -547,7 +547,7 @@ Años: 1990 - 2024</code></pre>
 <section id="asignación-de-continente" class="level2">
 <h2 class="anchored" data-anchor-id="asignación-de-continente">Asignación de continente</h2>
 <p>Se creó una variable de continente para facilitar las comparaciones regionales.</p>
-<div id="090211ff" class="cell" data-execution_count="6">
+<div id="78371ed8" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mapa_continente <span class="op">=</span> {}</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> continente, lista <span class="kw">in</span> paises_por_continente.items():</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> pais <span class="kw">in</span> lista:</span>
@@ -603,7 +603,7 @@ Años: 1990 - 2024</code></pre>
 <section id="revisión-de-duplicados" class="level2">
 <h2 class="anchored" data-anchor-id="revisión-de-duplicados">Revisión de duplicados</h2>
 <p>Se verificó que no existieran filas duplicadas por país y año.</p>
-<div id="0531b4bc" class="cell" data-execution_count="7">
+<div id="35fd52f2" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>duplicados <span class="op">=</span> df.duplicated(subset<span class="op">=</span>[<span class="st">"Entity"</span>, <span class="st">"Year"</span>]).<span class="bu">sum</span>()</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Duplicados por Entity-Year:"</span>, duplicados)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -614,7 +614,7 @@ Años: 1990 - 2024</code></pre>
 <section id="manejo-de-valores-faltantes" class="level2">
 <h2 class="anchored" data-anchor-id="manejo-de-valores-faltantes">Manejo de valores faltantes</h2>
 <p>Los valores faltantes en las fuentes seleccionadas se reemplazaron por cero para mantener consistencia temporal entre países y años. Esta decisión se adoptó para evitar interrupciones en las series y facilitar la comparación visual.</p>
-<div id="4b28089f" class="cell" data-execution_count="8">
+<div id="b4246561" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>df[fuentes] <span class="op">=</span> df[fuentes].fillna(<span class="dv">0</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>df[fuentes].isna().<span class="bu">sum</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="8">
@@ -632,7 +632,7 @@ dtype: int64</code></pre>
 <section id="creación-de-variables-auxiliares" class="level2">
 <h2 class="anchored" data-anchor-id="creación-de-variables-auxiliares">Creación de variables auxiliares</h2>
 <p>Se añadieron variables útiles para el análisis comparativo, como la generación total por país y año, así como agregados por tipo de fuente.</p>
-<div id="a4490f0e" class="cell" data-execution_count="9">
+<div id="da7d5d5d" class="cell" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Total generation"</span>] <span class="op">=</span> df[fuentes].<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Fossil generation"</span>] <span class="op">=</span> df[<span class="st">"Coal"</span>] <span class="op">+</span> df[<span class="st">"Gas"</span>] <span class="op">+</span> df[<span class="st">"Oil"</span>]</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Low carbon generation"</span>] <span class="op">=</span> df[<span class="st">"Nuclear"</span>] <span class="op">+</span> df[<span class="st">"Hydropower"</span>] <span class="op">+</span> df[<span class="st">"Wind"</span>] <span class="op">+</span> df[<span class="st">"Solar"</span>]</span>
@@ -704,7 +704,7 @@ dtype: int64</code></pre>
 <section id="cálculo-de-participaciones-porcentuales" class="level2">
 <h2 class="anchored" data-anchor-id="cálculo-de-participaciones-porcentuales">Cálculo de participaciones porcentuales</h2>
 <p>Para algunas visualizaciones fue útil trabajar no solo con valores absolutos, sino también con la participación de cada fuente respecto al total de generación.</p>
-<div id="15b6b91b" class="cell" data-execution_count="10">
+<div id="6649c14a" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fuente <span class="kw">in</span> fuentes:</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    df[<span class="ss">f"Share_</span><span class="sc">{</span>fuente<span class="sc">}</span><span class="ss">"</span>] <span class="op">=</span> df[fuente] <span class="op">/</span> df[<span class="st">"Total generation"</span>].replace(<span class="dv">0</span>, pd.NA)</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -721,7 +721,7 @@ dtype: int64</code></pre>
 <section id="identificación-de-fuente-dominante" class="level2">
 <h2 class="anchored" data-anchor-id="identificación-de-fuente-dominante">Identificación de fuente dominante</h2>
 <p>Se creó una variable que identifica la fuente con mayor generación en cada país y año.</p>
-<div id="3583d32a" class="cell" data-execution_count="11">
+<div id="8d76e646" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"Dominant source"</span>] <span class="op">=</span> df[fuentes].idxmax(axis<span class="op">=</span><span class="dv">1</span>)</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>df[[<span class="st">"Entity"</span>, <span class="st">"Year"</span>, <span class="st">"Dominant source"</span>]].head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="11">
@@ -778,7 +778,7 @@ dtype: int64</code></pre>
 <section id="transformación-a-formato-largo-para-visualización" class="level2">
 <h2 class="anchored" data-anchor-id="transformación-a-formato-largo-para-visualización">Transformación a formato largo para visualización</h2>
 <p>Como Altair trabaja especialmente bien con datos en formato largo, se transformó la tabla.</p>
-<div id="b699f2f2" class="cell" data-execution_count="12">
+<div id="bd5fc8cc" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>df_long <span class="op">=</span> df.melt(</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    id_vars<span class="op">=</span>[<span class="st">"Entity"</span>, <span class="st">"Continent"</span>, <span class="st">"Year"</span>, <span class="st">"Total generation"</span>, <span class="st">"Fossil generation"</span>, <span class="st">"Low carbon generation"</span>, <span class="st">"Dominant source"</span>],</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    value_vars<span class="op">=</span>fuentes,</span>
@@ -874,7 +874,7 @@ dtype: int64</code></pre>
 </div>
 </div>
 <p>También se calcularon participaciones en formato largo.</p>
-<div id="ec461642" class="cell" data-execution_count="13">
+<div id="4e296584" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>df_long[<span class="st">"Share"</span>] <span class="op">=</span> np.where(</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    df_long[<span class="st">"Total generation"</span>] <span class="op">&gt;</span> <span class="dv">0</span>,</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    df_long[<span class="st">"Generation TWh"</span>] <span class="op">/</span> df_long[<span class="st">"Total generation"</span>],</span>
@@ -887,7 +887,7 @@ dtype: int64</code></pre>
 <p>Al final del proceso se obtuvieron dos tablas principales:</p>
 <p><strong>df:</strong> tabla ancha, útil para cálculos y comparación rápida.</p>
 <p><strong>df_long:</strong> tabla larga, útil para visualizaciones en Altair.</p>
-<div id="576a468f" class="cell" data-execution_count="14">
+<div id="022e834d" class="cell" data-execution_count="14">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Tabla ancha:"</span>, df.shape)</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Tabla larga:"</span>, df_long.shape)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">

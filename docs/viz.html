@@ -218,7 +218,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </div>
 <div style="text-align: justify;">
-<div id="902cd2ef" class="cell" data-execution_count="1">
+<div id="d028d244" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> altair <span class="im">as</span> alt</span>
@@ -283,7 +283,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="qué-fuentes-energéticas-dominan-la-generación-eléctrica-en-países-con-trayectorias-contrastantes" class="level3">
 <h3 class="anchored" data-anchor-id="qué-fuentes-energéticas-dominan-la-generación-eléctrica-en-países-con-trayectorias-contrastantes">¿Qué fuentes energéticas dominan la generación eléctrica en países con trayectorias contrastantes?</h3>
 <p>Para responder esta pregunta se seleccionaron cinco países representativos: China, Estados Unidos, Brasil, Francia y Noruega.</p>
-<div id="1b8b45d2" class="cell" data-execution_count="3">
+<div id="477ff549" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>paises_ejemplo <span class="op">=</span> [<span class="st">"China"</span>, <span class="st">"United States"</span>, <span class="st">"Brazil"</span>, <span class="st">"France"</span>, <span class="st">"Norway"</span>]</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_q1 <span class="op">=</span> df_long[df_long[<span class="st">"Entity"</span>].isin(paises_ejemplo)].copy()</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -303,23 +303,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-display" data-execution_count="3">
 
 <style>
-  #altair-viz-f8e8dc1b188245c1b7fff961c3b01ffc.vega-embed {
+  #altair-viz-1b7d09f708f2424bbbb378a189986665.vega-embed {
     width: 100%;
     display: flex;
   }
 
-  #altair-viz-f8e8dc1b188245c1b7fff961c3b01ffc.vega-embed details,
-  #altair-viz-f8e8dc1b188245c1b7fff961c3b01ffc.vega-embed details summary {
+  #altair-viz-1b7d09f708f2424bbbb378a189986665.vega-embed details,
+  #altair-viz-1b7d09f708f2424bbbb378a189986665.vega-embed details summary {
     position: relative;
   }
 </style>
-<div id="altair-viz-f8e8dc1b188245c1b7fff961c3b01ffc"></div>
+<div id="altair-viz-1b7d09f708f2424bbbb378a189986665"></div>
 <script type="text/javascript">
   var VEGA_DEBUG = (typeof VEGA_DEBUG == "undefined") ? {} : VEGA_DEBUG;
   (function(spec, embedOpt){
     let outputDiv = document.currentScript.previousElementSibling;
-    if (outputDiv.id !== "altair-viz-f8e8dc1b188245c1b7fff961c3b01ffc") {
-      outputDiv = document.getElementById("altair-viz-f8e8dc1b188245c1b7fff961c3b01ffc");
+    if (outputDiv.id !== "altair-viz-1b7d09f708f2424bbbb378a189986665") {
+      outputDiv = document.getElementById("altair-viz-1b7d09f708f2424bbbb378a189986665");
     }
 
     const paths = {
@@ -380,7 +380,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="qué-diferencias-se-observan-entre-continentes-en-la-evolución-de-las-fuentes-eléctricas" class="level3">
 <h3 class="anchored" data-anchor-id="qué-diferencias-se-observan-entre-continentes-en-la-evolución-de-las-fuentes-eléctricas">¿Qué diferencias se observan entre continentes en la evolución de las fuentes eléctricas?</h3>
 <p>Para comparar regiones, se agregaron los valores de los países seleccionados dentro de cada continente.</p>
-<div id="71d29b0e" class="cell" data-execution_count="4">
+<div id="4cfd969e" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>continent_source_year <span class="op">=</span> (</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    df_long.groupby([<span class="st">"Continent"</span>, <span class="st">"Year"</span>, <span class="st">"Source"</span>], as_index<span class="op">=</span><span class="va">False</span>)[<span class="st">"Generation_TWh"</span>]</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">sum</span>()</span>
@@ -402,23 +402,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-display" data-execution_count="4">
 
 <style>
-  #altair-viz-4c5df9bc5f41473abd6314b7ba1409ce.vega-embed {
+  #altair-viz-4ea441c898754c61b0a6bb8377daeae0.vega-embed {
     width: 100%;
     display: flex;
   }
 
-  #altair-viz-4c5df9bc5f41473abd6314b7ba1409ce.vega-embed details,
-  #altair-viz-4c5df9bc5f41473abd6314b7ba1409ce.vega-embed details summary {
+  #altair-viz-4ea441c898754c61b0a6bb8377daeae0.vega-embed details,
+  #altair-viz-4ea441c898754c61b0a6bb8377daeae0.vega-embed details summary {
     position: relative;
   }
 </style>
-<div id="altair-viz-4c5df9bc5f41473abd6314b7ba1409ce"></div>
+<div id="altair-viz-4ea441c898754c61b0a6bb8377daeae0"></div>
 <script type="text/javascript">
   var VEGA_DEBUG = (typeof VEGA_DEBUG == "undefined") ? {} : VEGA_DEBUG;
   (function(spec, embedOpt){
     let outputDiv = document.currentScript.previousElementSibling;
-    if (outputDiv.id !== "altair-viz-4c5df9bc5f41473abd6314b7ba1409ce") {
-      outputDiv = document.getElementById("altair-viz-4c5df9bc5f41473abd6314b7ba1409ce");
+    if (outputDiv.id !== "altair-viz-4ea441c898754c61b0a6bb8377daeae0") {
+      outputDiv = document.getElementById("altair-viz-4ea441c898754c61b0a6bb8377daeae0");
     }
 
     const paths = {
@@ -479,7 +479,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="qué-países-presentan-matrices-más-diversificadas-y-cuáles-dependen-más-de-pocas-fuentes" class="level3">
 <h3 class="anchored" data-anchor-id="qué-países-presentan-matrices-más-diversificadas-y-cuáles-dependen-más-de-pocas-fuentes">¿Qué países presentan matrices más diversificadas y cuáles dependen más de pocas fuentes?</h3>
 <p>Para responder esta pregunta se compara la composición relativa de la generación eléctrica en el año 2024. En lugar de observar únicamente valores absolutos, se utiliza la participación de cada fuente dentro del total generado por país. Esto permite distinguir con mayor claridad entre matrices concentradas en una o dos fuentes y matrices más equilibradas.</p>
-<div id="9c59a59b" class="cell" data-execution_count="5">
+<div id="23a97bec" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df_2024 <span class="op">=</span> df_long[df_long[<span class="st">"Year"</span>] <span class="op">==</span> <span class="dv">2024</span>].copy()</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>chart3 <span class="op">=</span> alt.Chart(df_2024).mark_bar().encode(</span>
@@ -497,23 +497,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-display" data-execution_count="5">
 
 <style>
-  #altair-viz-feb745c3709f4319a4906d22d21171a6.vega-embed {
+  #altair-viz-33ed88ce6f7742f5be2eb7dd496ba07d.vega-embed {
     width: 100%;
     display: flex;
   }
 
-  #altair-viz-feb745c3709f4319a4906d22d21171a6.vega-embed details,
-  #altair-viz-feb745c3709f4319a4906d22d21171a6.vega-embed details summary {
+  #altair-viz-33ed88ce6f7742f5be2eb7dd496ba07d.vega-embed details,
+  #altair-viz-33ed88ce6f7742f5be2eb7dd496ba07d.vega-embed details summary {
     position: relative;
   }
 </style>
-<div id="altair-viz-feb745c3709f4319a4906d22d21171a6"></div>
+<div id="altair-viz-33ed88ce6f7742f5be2eb7dd496ba07d"></div>
 <script type="text/javascript">
   var VEGA_DEBUG = (typeof VEGA_DEBUG == "undefined") ? {} : VEGA_DEBUG;
   (function(spec, embedOpt){
     let outputDiv = document.currentScript.previousElementSibling;
-    if (outputDiv.id !== "altair-viz-feb745c3709f4319a4906d22d21171a6") {
-      outputDiv = document.getElementById("altair-viz-feb745c3709f4319a4906d22d21171a6");
+    if (outputDiv.id !== "altair-viz-33ed88ce6f7742f5be2eb7dd496ba07d") {
+      outputDiv = document.getElementById("altair-viz-33ed88ce6f7742f5be2eb7dd496ba07d");
     }
 
     const paths = {
@@ -565,7 +565,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </script>
 </div>
 </div>
-<div id="fe134cd9" class="cell" data-execution_count="6">
+<div id="3d1a13ef" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>orden_paises <span class="op">=</span> []</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> continente, lista <span class="kw">in</span> paises_por_continente.items():</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    orden_paises.extend(lista)</span>
@@ -591,23 +591,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-display" data-execution_count="6">
 
 <style>
-  #altair-viz-c9f1120200ad4744882d205b80154f8f.vega-embed {
+  #altair-viz-f5bcd3e9bb9f499597e511c746d1c21c.vega-embed {
     width: 100%;
     display: flex;
   }
 
-  #altair-viz-c9f1120200ad4744882d205b80154f8f.vega-embed details,
-  #altair-viz-c9f1120200ad4744882d205b80154f8f.vega-embed details summary {
+  #altair-viz-f5bcd3e9bb9f499597e511c746d1c21c.vega-embed details,
+  #altair-viz-f5bcd3e9bb9f499597e511c746d1c21c.vega-embed details summary {
     position: relative;
   }
 </style>
-<div id="altair-viz-c9f1120200ad4744882d205b80154f8f"></div>
+<div id="altair-viz-f5bcd3e9bb9f499597e511c746d1c21c"></div>
 <script type="text/javascript">
   var VEGA_DEBUG = (typeof VEGA_DEBUG == "undefined") ? {} : VEGA_DEBUG;
   (function(spec, embedOpt){
     let outputDiv = document.currentScript.previousElementSibling;
-    if (outputDiv.id !== "altair-viz-c9f1120200ad4744882d205b80154f8f") {
-      outputDiv = document.getElementById("altair-viz-c9f1120200ad4744882d205b80154f8f");
+    if (outputDiv.id !== "altair-viz-f5bcd3e9bb9f499597e511c746d1c21c") {
+      outputDiv = document.getElementById("altair-viz-f5bcd3e9bb9f499597e511c746d1c21c");
     }
 
     const paths = {

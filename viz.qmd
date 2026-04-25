@@ -150,7 +150,7 @@ chart1
 
 **Interpretación**
 
-La composición de la generación eléctrica cambia de manera desigual entre países. China muestra un fuerte predominio del carbón; Estados Unidos refleja una reducción relativa del carbón y un aumento del gas; Brasil y Noruega mantienen una alta presencia de hidroelectricidad; y Francia destaca por la importancia de la energía nuclear.
+La composición de la generación eléctrica cambia de manera desigual entre países. China muestra un fuerte predominio del carbón; Estados Unidos refleja una reducción relativa del carbón y un aumento del gas; Brasil, Noruega y Ecuador mantienen una alta presencia de hidroelectricidad; y Francia destaca por la importancia de la energía nuclear.
 
 ## Pregunta 2
 ### ¿Qué diferencias se observan entre continentes en la evolución de las fuentes eléctricas?

@@ -57,9 +57,9 @@ Comprender la evolución de la matriz eléctrica permite observar no solo difere
 
 # Preguntas analíticas
 
-- ¿Qué fuentes energéticas dominan la generación eléctrica en los países analizados y cómo ha cambiado ese dominio con el tiempo?
-- ¿Qué diferencias se observan entre continentes en la evolución de fuentes como carbón, gas, hidroelectricidad, nuclear, solar y eólica?
-- ¿Qué países presentan matrices eléctricas más diversificadas y cuáles mantienen una fuerte dependencia de pocas fuentes?
+- ¿Qué fuentes energéticas dominan la generación eléctrica en países con trayectorias contrastantes?
+- ¿Qué diferencias se observan entre continentes en la evolución de las fuentes eléctricas?
+- ¿Qué países presentan matrices más diversificadas y cuáles dependen más de pocas fuentes?
 
 # Dataset utilizado
 

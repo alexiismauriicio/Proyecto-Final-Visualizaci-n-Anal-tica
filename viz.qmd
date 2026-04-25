@@ -127,10 +127,10 @@ df_long["Share"] = np.where(
 
 ## Pregunta 1
 ### ¿Qué fuentes energéticas dominan la generación eléctrica en países con trayectorias contrastantes?
-Para responder esta pregunta se seleccionaron cinco países representativos: China, Estados Unidos, Brasil, Francia y Noruega.
+Para responder esta pregunta se seleccionaron seis países representativos: China, Estados Unidos, Brasil, Francia, Noruega y Ecuador.
 
 ```{python}
-paises_ejemplo = ["China", "United States", "Brazil", "France", "Norway"]
+paises_ejemplo = ["China", "United States", "Brazil", "France", "Norway", "Ecuador"]
 df_q1 = df_long[df_long["Entity"].isin(paises_ejemplo)].copy()
 
 chart1 = alt.Chart(df_q1).mark_area().encode(

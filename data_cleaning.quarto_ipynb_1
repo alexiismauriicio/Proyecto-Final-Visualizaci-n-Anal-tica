@@ -52,7 +52,7 @@
         "\n",
         "En esta etapa se cargó el dataset original de producción eléctrica por fuente, con información anual para múltiples países y regiones. Las variables principales incluyeron el nombre de la entidad, el año y la generación eléctrica por distintas fuentes."
       ],
-      "id": "c56cbeb9"
+      "id": "ea777f1a"
     },
     {
       "cell_type": "code",
@@ -64,7 +64,7 @@
         "df = pd.read_csv(\"electricity-production-by-source.csv\")\n",
         "df.head()"
       ],
-      "id": "60334ad1",
+      "id": "803178fb",
       "execution_count": null,
       "outputs": []
     },
@@ -76,7 +76,7 @@
         "\n",
         "Se realizó una revisión inicial del tamaño del dataset, los nombres de las columnas, el rango temporal y las entidades disponibles."
       ],
-      "id": "b47dbbea"
+      "id": "bc2ce809"
     },
     {
       "cell_type": "code",
@@ -87,7 +87,7 @@
         "print(\"Años:\", df[\"Year\"].min(), \"-\", df[\"Year\"].max())\n",
         "print(\"Número de entidades:\", df[\"Entity\"].nunique())"
       ],
-      "id": "b0c884bf",
+      "id": "91370658",
       "execution_count": null,
       "outputs": []
     },
@@ -97,7 +97,7 @@
       "source": [
         "También se identificaron los tipos de datos:"
       ],
-      "id": "35e63b83"
+      "id": "3fbed53b"
     },
     {
       "cell_type": "code",
@@ -105,7 +105,7 @@
       "source": [
         "df.dtypes"
       ],
-      "id": "26ef004b",
+      "id": "e9af4666",
       "execution_count": null,
       "outputs": []
     },
@@ -126,7 +126,7 @@
         "* Wind\n",
         "* Solar"
       ],
-      "id": "c317d527"
+      "id": "f8cfc114"
     },
     {
       "cell_type": "code",
@@ -137,7 +137,7 @@
         "df = df[columnas_base].copy()\n",
         "df.head()"
       ],
-      "id": "6b3abe80",
+      "id": "ae987477",
       "execution_count": null,
       "outputs": []
     },
@@ -149,7 +149,7 @@
         "\n",
         "Para mantener la visualización legible y comparativa, se seleccionaron cinco continentes y cinco países por continente. Además, se restringió el análisis al periodo 1990–2024 para trabajar con más de tres décadas de información y reducir problemas de cobertura incompleta en años más antiguos."
       ],
-      "id": "8df87efa"
+      "id": "300bd360"
     },
     {
       "cell_type": "code",
@@ -175,7 +175,7 @@
         "print(\"Países incluidos:\", df[\"Entity\"].nunique())\n",
         "print(\"Años:\", df[\"Year\"].min(), \"-\", df[\"Year\"].max())"
       ],
-      "id": "e39f7dce",
+      "id": "962ba1ab",
       "execution_count": null,
       "outputs": []
     },
@@ -186,7 +186,7 @@
         "## Asignación de continente\n",
         "Se creó una variable de continente para facilitar las comparaciones regionales."
       ],
-      "id": "0d773bca"
+      "id": "ecff53fd"
     },
     {
       "cell_type": "code",
@@ -200,7 +200,7 @@
         "df[\"Continent\"] = df[\"Entity\"].map(mapa_continente)\n",
         "df[[\"Entity\", \"Continent\"]].drop_duplicates().head()"
       ],
-      "id": "c32e42ad",
+      "id": "ab20526b",
       "execution_count": null,
       "outputs": []
     },
@@ -211,7 +211,7 @@
         "## Revisión de duplicados\n",
         "Se verificó que no existieran filas duplicadas por país y año."
       ],
-      "id": "81c25458"
+      "id": "9a001931"
     },
     {
       "cell_type": "code",
@@ -220,7 +220,7 @@
         "duplicados = df.duplicated(subset=[\"Entity\", \"Year\"]).sum()\n",
         "print(\"Duplicados por Entity-Year:\", duplicados)"
       ],
-      "id": "cbd73a87",
+      "id": "2038468a",
       "execution_count": null,
       "outputs": []
     },
@@ -232,7 +232,7 @@
         "\n",
         "Los valores faltantes en las fuentes seleccionadas se reemplazaron por cero para mantener consistencia temporal entre países y años. Esta decisión se adoptó para evitar interrupciones en las series y facilitar la comparación visual."
       ],
-      "id": "f731c60b"
+      "id": "0696fd7b"
     },
     {
       "cell_type": "code",
@@ -241,7 +241,7 @@
         "df[fuentes] = df[fuentes].fillna(0)\n",
         "df[fuentes].isna().sum()"
       ],
-      "id": "be09535b",
+      "id": "acc0f1d1",
       "execution_count": null,
       "outputs": []
     },
@@ -253,7 +253,7 @@
         "\n",
         "Se añadieron variables útiles para el análisis comparativo, como la generación total por país y año, así como agregados por tipo de fuente."
       ],
-      "id": "229eca63"
+      "id": "d7ba7a5d"
     },
     {
       "cell_type": "code",
@@ -265,7 +265,7 @@
         "\n",
         "df[[\"Entity\", \"Year\", \"Total generation\", \"Fossil generation\", \"Low carbon generation\"]].head()"
       ],
-      "id": "4f7b502a",
+      "id": "9c6698c0",
       "execution_count": null,
       "outputs": []
     },
@@ -277,7 +277,7 @@
         "\n",
         "Para algunas visualizaciones fue útil trabajar no solo con valores absolutos, sino también con la participación de cada fuente respecto al total de generación."
       ],
-      "id": "3bddf9c9"
+      "id": "acb34564"
     },
     {
       "cell_type": "code",
@@ -288,7 +288,7 @@
         "\n",
         "df.columns"
       ],
-      "id": "2bda5f41",
+      "id": "5fd3eace",
       "execution_count": null,
       "outputs": []
     },
@@ -299,7 +299,7 @@
         "## Identificación de fuente dominante\n",
         "Se creó una variable que identifica la fuente con mayor generación en cada país y año."
       ],
-      "id": "2efdc181"
+      "id": "b9063303"
     },
     {
       "cell_type": "code",
@@ -308,7 +308,7 @@
         "df[\"Dominant source\"] = df[fuentes].idxmax(axis=1)\n",
         "df[[\"Entity\", \"Year\", \"Dominant source\"]].head()"
       ],
-      "id": "0ffa5a7b",
+      "id": "0a9648e3",
       "execution_count": null,
       "outputs": []
     },
@@ -319,7 +319,7 @@
         "## Transformación a formato largo para visualización\n",
         "Como Altair trabaja especialmente bien con datos en formato largo, se transformó la tabla."
       ],
-      "id": "6512a212"
+      "id": "88a3144f"
     },
     {
       "cell_type": "code",
@@ -334,7 +334,7 @@
         "\n",
         "df_long.head()"
       ],
-      "id": "8a7a15ed",
+      "id": "66c6a652",
       "execution_count": null,
       "outputs": []
     },
@@ -344,7 +344,7 @@
       "source": [
         "También se calcularon participaciones en formato largo."
       ],
-      "id": "4fbee71d"
+      "id": "7c86b4c0"
     },
     {
       "cell_type": "code",
@@ -356,7 +356,7 @@
         "    0\n",
         ")"
       ],
-      "id": "adc64b24",
+      "id": "98507980",
       "execution_count": null,
       "outputs": []
     },
@@ -371,7 +371,7 @@
         "\n",
         "**df_long:** tabla larga, útil para visualizaciones en Altair."
       ],
-      "id": "5dcfab1f"
+      "id": "a07d71bc"
     },
     {
       "cell_type": "code",
@@ -380,7 +380,7 @@
         "print(\"Tabla ancha:\", df.shape)\n",
         "print(\"Tabla larga:\", df_long.shape)"
       ],
-      "id": "8e902896",
+      "id": "480cb686",
       "execution_count": null,
       "outputs": []
     },
@@ -399,7 +399,7 @@
         "\n",
         "</div>"
       ],
-      "id": "ef8cf5a5"
+      "id": "08879a63"
     }
   ],
   "metadata": {

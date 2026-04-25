@@ -1,0 +1,415 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Limpieza y preparación de datos\"\n",
+        "format: html\n",
+        "---\n",
+        "\n",
+        "<div id=\"page-toc\"></div>\n",
+        "\n",
+        "<script>\n",
+        "  window.addEventListener(\"load\", () => {\n",
+        "    const tocContainer = document.querySelector(\"#page-toc\");\n",
+        "    if (!tocContainer) return;\n",
+        "    const sections = Array.from(document.querySelectorAll(\"main.content section[id]\"));\n",
+        "    const headings = sections\n",
+        "      .map((section) => {\n",
+        "        const heading = section.querySelector(\"h1, h2, h3\");\n",
+        "        return heading ? {\n",
+        "          id: section.id,\n",
+        "          text: heading.textContent.trim(),\n",
+        "          level: heading.tagName.toLowerCase()\n",
+        "        } : null;\n",
+        "      })\n",
+        "      .filter(Boolean);\n",
+        "    if (!headings.length) {\n",
+        "      tocContainer.style.display = \"none\";\n",
+        "      return;\n",
+        "    }\n",
+        "    tocContainer.innerHTML = \"<h2>Contenido</h2>\";\n",
+        "    const list = document.createElement(\"ul\");\n",
+        "    list.className = \"page-toc-list\";\n",
+        "    headings.forEach((heading) => {\n",
+        "      const item = document.createElement(\"li\");\n",
+        "      item.className = heading.level === \"h3\" ? \"toc-level-3\" : \"toc-level-2\";\n",
+        "      const link = document.createElement(\"a\");\n",
+        "      link.href = `#${heading.id}`;\n",
+        "      link.textContent = heading.text;\n",
+        "      item.appendChild(link);\n",
+        "      list.appendChild(item);\n",
+        "    });\n",
+        "    tocContainer.appendChild(list);\n",
+        "  });\n",
+        "</script>\n",
+        "\n",
+        "<div style=\"text-align: justify;\">\n",
+        "\n",
+        "## Carga del dataset\n",
+        "\n",
+        "En esta etapa se cargó el dataset original de producción eléctrica por fuente, con información anual para múltiples países y regiones. Las variables principales incluyeron el nombre de la entidad, el año y la generación eléctrica por distintas fuentes."
+      ],
+      "id": "a820a683"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "\n",
+        "df = pd.read_csv(\"electricity-production-by-source.csv\")\n",
+        "df.head()"
+      ],
+      "id": "de9ef9df",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Exploración inicial\n",
+        "\n",
+        "Se realizó una revisión inicial del tamaño del dataset, los nombres de las columnas, el rango temporal y las entidades disponibles."
+      ],
+      "id": "8417fed8"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print(\"Dimensiones:\", df.shape)\n",
+        "print(\"Columnas:\", df.columns.tolist())\n",
+        "print(\"Años:\", df[\"Year\"].min(), \"-\", df[\"Year\"].max())\n",
+        "print(\"Número de entidades:\", df[\"Entity\"].nunique())"
+      ],
+      "id": "87650b6e",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "También se identificaron los tipos de datos:"
+      ],
+      "id": "3eb2f1c8"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "df.dtypes"
+      ],
+      "id": "650ae6de",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Esta exploración permitió identificar que el dataset contenía más entidades de las necesarias para el análisis final, por lo que fue necesario realizar una selección.\n",
+        "\n",
+        "## Selección de variables relevantes\n",
+        "Para este proyecto se eligieron siete fuentes principales de generación:\n",
+        "\n",
+        "* Coal\n",
+        "* Gas\n",
+        "* Oil\n",
+        "* Nuclear\n",
+        "* Hydropower\n",
+        "* Wind\n",
+        "* Solar"
+      ],
+      "id": "6f4124da"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "fuentes = [\"Coal\", \"Gas\", \"Oil\", \"Nuclear\", \"Hydropower\", \"Wind\", \"Solar\"]\n",
+        "columnas_base = [\"Entity\", \"Code\", \"Year\"] + fuentes\n",
+        "df = df[columnas_base].copy()\n",
+        "df.head()"
+      ],
+      "id": "22a77eda",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Selección de países y periodo de análisis\n",
+        "\n",
+        "Para mantener la visualización legible y comparativa, se seleccionaron cinco continentes y cinco países por continente. Además, se restringió el análisis al periodo 1990–2024 para trabajar con más de tres décadas de información y reducir problemas de cobertura incompleta en años más antiguos."
+      ],
+      "id": "db9d9d1b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "paises_por_continente = {\n",
+        "    \"Africa\": [\"South Africa\", \"Egypt\", \"Algeria\", \"Morocco\", \"Nigeria\"],\n",
+        "    \"Asia\": [\"China\", \"India\", \"Japan\", \"South Korea\", \"Indonesia\"],\n",
+        "    \"Europe\": [\"Germany\", \"France\", \"Spain\", \"Norway\", \"Poland\"],\n",
+        "    \"North America\": [\"United States\", \"Canada\", \"Mexico\", \"Cuba\", \"Dominican Republic\"],\n",
+        "    \"South America\": [\"Brazil\", \"Argentina\", \"Chile\", \"Colombia\", \"Ecuador\"]\n",
+        "}\n",
+        "\n",
+        "paises = [pais for lista in paises_por_continente.values() for pais in lista]\n",
+        "\n",
+        "df = df[\n",
+        "    (df[\"Entity\"].isin(paises)) &\n",
+        "    (df[\"Year\"] >= 1990) &\n",
+        "    (df[\"Year\"] <= 2024)\n",
+        "].copy()\n",
+        "\n",
+        "print(\"Dimensiones después del filtrado:\", df.shape)\n",
+        "print(\"Países incluidos:\", df[\"Entity\"].nunique())\n",
+        "print(\"Años:\", df[\"Year\"].min(), \"-\", df[\"Year\"].max())"
+      ],
+      "id": "79629d4d",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Asignación de continente\n",
+        "Se creó una variable de continente para facilitar las comparaciones regionales."
+      ],
+      "id": "d97b79f9"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "mapa_continente = {}\n",
+        "for continente, lista in paises_por_continente.items():\n",
+        "    for pais in lista:\n",
+        "        mapa_continente[pais] = continente\n",
+        "\n",
+        "df[\"Continent\"] = df[\"Entity\"].map(mapa_continente)\n",
+        "df[[\"Entity\", \"Continent\"]].drop_duplicates().head()"
+      ],
+      "id": "a8228673",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Revisión de duplicados\n",
+        "Se verificó que no existieran filas duplicadas por país y año."
+      ],
+      "id": "96b8c066"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "duplicados = df.duplicated(subset=[\"Entity\", \"Year\"]).sum()\n",
+        "print(\"Duplicados por Entity-Year:\", duplicados)"
+      ],
+      "id": "3e1b7983",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Manejo de valores faltantes\n",
+        "\n",
+        "Los valores faltantes en las fuentes seleccionadas se reemplazaron por cero para mantener consistencia temporal entre países y años. Esta decisión se adoptó para evitar interrupciones en las series y facilitar la comparación visual."
+      ],
+      "id": "bd224d34"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "df[fuentes] = df[fuentes].fillna(0)\n",
+        "df[fuentes].isna().sum()"
+      ],
+      "id": "7692d041",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Creación de variables auxiliares\n",
+        "\n",
+        "Se añadieron variables útiles para el análisis comparativo, como la generación total por país y año, así como agregados por tipo de fuente."
+      ],
+      "id": "fbf7c479"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "df[\"Total generation\"] = df[fuentes].sum(axis=1)\n",
+        "df[\"Fossil generation\"] = df[\"Coal\"] + df[\"Gas\"] + df[\"Oil\"]\n",
+        "df[\"Low carbon generation\"] = df[\"Nuclear\"] + df[\"Hydropower\"] + df[\"Wind\"] + df[\"Solar\"]\n",
+        "\n",
+        "df[[\"Entity\", \"Year\", \"Total generation\", \"Fossil generation\", \"Low carbon generation\"]].head()"
+      ],
+      "id": "c31e6981",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Cálculo de participaciones porcentuales\n",
+        "\n",
+        "Para algunas visualizaciones fue útil trabajar no solo con valores absolutos, sino también con la participación de cada fuente respecto al total de generación."
+      ],
+      "id": "679a4716"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "for fuente in fuentes:\n",
+        "    df[f\"Share_{fuente}\"] = df[fuente] / df[\"Total generation\"].replace(0, pd.NA)\n",
+        "\n",
+        "df.columns"
+      ],
+      "id": "8fd5cea2",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Identificación de fuente dominante\n",
+        "Se creó una variable que identifica la fuente con mayor generación en cada país y año."
+      ],
+      "id": "e8483334"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "df[\"Dominant source\"] = df[fuentes].idxmax(axis=1)\n",
+        "df[[\"Entity\", \"Year\", \"Dominant source\"]].head()"
+      ],
+      "id": "b61bacc7",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Transformación a formato largo para visualización\n",
+        "Como Altair trabaja especialmente bien con datos en formato largo, se transformó la tabla."
+      ],
+      "id": "f08fe2c3"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "df_long = df.melt(\n",
+        "    id_vars=[\"Entity\", \"Continent\", \"Year\", \"Total generation\", \"Fossil generation\", \"Low carbon generation\", \"Dominant source\"],\n",
+        "    value_vars=fuentes,\n",
+        "    var_name=\"Source\",\n",
+        "    value_name=\"Generation TWh\"\n",
+        ")\n",
+        "\n",
+        "df_long.head()"
+      ],
+      "id": "fc9743bb",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "También se calcularon participaciones en formato largo."
+      ],
+      "id": "92425ed0"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "df_long[\"Share\"] = np.where(\n",
+        "    df_long[\"Total generation\"] > 0,\n",
+        "    df_long[\"Generation TWh\"] / df_long[\"Total generation\"],\n",
+        "    0\n",
+        ")"
+      ],
+      "id": "7d307057",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Tablas finales para el análisis\n",
+        "Al final del proceso se obtuvieron dos tablas principales:\n",
+        "\n",
+        "**df:** tabla ancha, útil para cálculos y comparación rápida.\n",
+        "\n",
+        "**df_long:** tabla larga, útil para visualizaciones en Altair."
+      ],
+      "id": "ead211c8"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print(\"Tabla ancha:\", df.shape)\n",
+        "print(\"Tabla larga:\", df_long.shape)"
+      ],
+      "id": "157db6fd",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Justificación de las decisiones tomadas\n",
+        "Las decisiones de limpieza y transformación se tomaron con tres objetivos principales:\n",
+        "\n",
+        "* Asegurar comparabilidad entre países y continentes.\n",
+        "* Mantener una cobertura temporal suficientemente amplia.\n",
+        "* Construir visualizaciones claras para un público no técnico.\n",
+        "\n",
+        "El análisis principal del proyecto se basa en una tabla limpia y estructurada para visualizaciones explicativas.\n",
+        "\n",
+        "</div>"
+      ],
+      "id": "c011c4e4"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/Users/alexisgarzon/Documents/Yachay Tech/MAESTRÍA CIENCIA DE DATOS/2do Semestre/2026SEM01_YT_VIZ/.venv/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

@@ -197,7 +197,8 @@ chart3 = alt.Chart(df_2024).mark_bar().encode(
     tooltip=["Entity:N", "Source:N", alt.Tooltip("Share:Q", format=".2f")]
 ).properties(
     width=700,
-    height=400
+    height=400,
+    title="Composición relativa de la generación eléctrica por país (2024)"
 )
 
 chart3
@@ -221,11 +222,13 @@ heatmap = alt.Chart(df_2024).mark_rect().encode(
     ]
 ).properties(
     width=500,
-    height=500
+    height=500,
+    title="Heatmap de participación por fuente y país (2024)"
 )
 
 heatmap
 ```
+
 
 **Interpretación**
 

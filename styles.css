@@ -5,3 +5,61 @@ body {
 .navbar-brand {
   font-weight: bold;
 }
+
+#page-toc {
+  position: fixed;
+  top: 110px;
+  right: 2rem;
+  width: 260px;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.08);
+  z-index: 1200;
+  font-size: 0.95rem;
+}
+
+#page-toc h2 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.page-toc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.page-toc-list li {
+  margin-bottom: 0.5rem;
+}
+
+.page-toc-list li.toc-level-3 {
+  margin-left: 0.75rem;
+}
+
+.page-toc-list a {
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+.page-toc-list a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1199px) {
+  #page-toc {
+    display: none;
+  }
+}
+
+@media (min-width: 1200px) {
+  main.content {
+    margin-right: 320px;
+  }
+}

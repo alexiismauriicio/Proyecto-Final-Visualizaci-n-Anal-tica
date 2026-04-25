@@ -178,6 +178,43 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<div id="page-toc">
+
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const tocContainer = document.querySelector("#page-toc");
+    if (!tocContainer) return;
+    const sections = Array.from(document.querySelectorAll("main.content section[id]"));
+    const headings = sections
+      .map((section) => {
+        const heading = section.querySelector("h1, h2, h3");
+        return heading ? {
+          id: section.id,
+          text: heading.textContent.trim(),
+          level: heading.tagName.toLowerCase()
+        } : null;
+      })
+      .filter(Boolean);
+    if (!headings.length) {
+      tocContainer.style.display = "none";
+      return;
+    }
+    tocContainer.innerHTML = "<h2>Contenido</h2>";
+    const list = document.createElement("ul");
+    list.className = "page-toc-list";
+    headings.forEach((heading) => {
+      const item = document.createElement("li");
+      item.className = heading.level === "h3" ? "toc-level-3" : "toc-level-2";
+      const link = document.createElement("a");
+      link.href = `#${heading.id}`;
+      link.textContent = heading.text;
+      item.appendChild(link);
+      list.appendChild(item);
+    });
+    tocContainer.appendChild(list);
+  });
+</script>
 <div style="text-align: justify;">
 <section id="introducción" class="level1">
 <h1>Introducción</h1>
@@ -211,7 +248,7 @@ ul.task-list li input[type="checkbox"] {
 <p>Este sitio se organiza en dos secciones principales además de esta introducción:</p>
 <ul>
 <li><a href="data_cleaning.html">Limpieza y preparación de datos</a></li>
-<li><a href="visualizations.html">Análisis y visualizaciones</a></li>
+<li><a href="viz.html">Análisis y visualizaciones</a></li>
 </ul>
 </section>
 <section id="cierre" class="level1">

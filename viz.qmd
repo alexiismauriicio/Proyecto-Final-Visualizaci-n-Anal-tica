@@ -1,8 +1,14 @@
 ---
 title: "Análisis y visualizaciones"
-format: html
+url: viz.html
+format:
+  html:
+    toc: false
+    toc-depth: 3
 jupyter: python3
 ---
+
+<div id="page-toc"></div>
 
 <div style="text-align: justify;">
 
@@ -67,6 +73,57 @@ df_long["Share"] = np.where(
 )
 ```
 
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const tocContainer = document.querySelector("#page-toc");
+    if (!tocContainer) return;
+    const sections = Array.from(document.querySelectorAll("main.content section[id]"));
+    const headings = sections
+      .map((section) => {
+        const heading = section.querySelector("h1, h2, h3");
+        return heading ? {
+          id: section.id,
+          text: heading.textContent.trim(),
+          level: heading.tagName.toLowerCase()
+        } : null;
+      })
+      .filter(Boolean);
+    if (!headings.length) {
+      tocContainer.style.display = "none";
+      return;
+    }
+    tocContainer.innerHTML = "<h2>Contenido</h2>";
+    const list = document.createElement("ul");
+    list.className = "page-toc-list";
+    headings.forEach((heading) => {
+      const item = document.createElement("li");
+      item.className = heading.level === "h3" ? "toc-level-3" : "toc-level-2";
+      const link = document.createElement("a");
+      link.href = `#${heading.id}`;
+      link.textContent = heading.text;
+      item.appendChild(link);
+      list.appendChild(item);
+    });
+    tocContainer.appendChild(list);
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const currentPage = window.location.pathname.split("/").pop() || "index.html";
+    const navLinks = document.querySelectorAll("header nav.navbar a.nav-link");
+    navLinks.forEach((link) => {
+      const href = link.getAttribute("href").split("/").pop();
+      if (href === currentPage || (href === "" && currentPage === "index.html")) {
+        link.classList.add("active");
+        link.setAttribute("aria-current", "page");
+      } else {
+        link.classList.remove("active");
+        link.removeAttribute("aria-current");
+      }
+    });
+  });
+</script>
 
 ## Pregunta 1
 ### ¿Qué fuentes energéticas dominan la generación eléctrica en países con trayectorias contrastantes?

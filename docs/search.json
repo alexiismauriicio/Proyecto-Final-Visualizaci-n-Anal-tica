@@ -1,0 +1,218 @@
+[
+  {
+    "objectID": "data_cleaning.html",
+    "href": "data_cleaning.html",
+    "title": "Limpieza y preparación de datos",
+    "section": "",
+    "text": "En esta etapa se cargó el dataset original de producción eléctrica por fuente, con información anual para múltiples países y regiones. Las variables principales incluyeron el nombre de la entidad, el año y la generación eléctrica por distintas fuentes.\n\nimport pandas as pd\nimport numpy as np\n\ndf = pd.read_csv(\"electricity-production-by-source.csv\")\ndf.head()\n\n\n\n\n\n\n\n\nEntity\nCode\nYear\nCoal\nGas\nNuclear\nHydropower\nSolar\nOil\nWind\nBioenergy\nOther renewables\n\n\n\n\n0\nASEAN (Ember)\nNaN\n2000\n76.03\n164.26\n0.0\n50.45\n0.0\n65.07\n0.0\n5.87\n16.93\n\n\n1\nASEAN (Ember)\nNaN\n2001\n86.26\n190.41\n0.0\n54.33\n0.0\n50.99\n0.0\n6.46\n16.40\n\n\n2\nASEAN (Ember)\nNaN\n2002\n93.43\n208.92\n0.0\n53.29\n0.0\n54.32\n0.0\n6.62\n16.61\n\n\n3\nASEAN (Ember)\nNaN\n2003\n102.01\n226.51\n0.0\n53.21\n0.0\n53.38\n0.0\n7.45\n15.74\n\n\n4\nASEAN (Ember)\nNaN\n2004\n115.01\n244.16\n0.0\n52.99\n0.0\n59.50\n0.0\n8.40\n16.57\n\n\n\n\n\n\n\n\n\n\nSe realizó una revisión inicial del tamaño del dataset, los nombres de las columnas, el rango temporal y las entidades disponibles.\n\nprint(\"Dimensiones:\", df.shape)\nprint(\"Columnas:\", df.columns.tolist())\nprint(\"Años:\", df[\"Year\"].min(), \"-\", df[\"Year\"].max())\nprint(\"Número de entidades:\", df[\"Entity\"].nunique())\n\nDimensiones: (10170, 12)\nColumnas: ['Entity', 'Code', 'Year', 'Coal', 'Gas', 'Nuclear', 'Hydropower', 'Solar', 'Oil', 'Wind', 'Bioenergy', 'Other renewables']\nAños: 1965 - 2025\nNúmero de entidades: 253\n\n\nTambién se identificaron los tipos de datos:\n\ndf.dtypes\n\nEntity               object\nCode                 object\nYear                  int64\nCoal                float64\nGas                 float64\nNuclear             float64\nHydropower          float64\nSolar               float64\nOil                 float64\nWind                float64\nBioenergy           float64\nOther renewables    float64\ndtype: object\n\n\nEsta exploración permitió identificar que el dataset contenía más entidades de las necesarias para el análisis final, por lo que fue necesario realizar una selección.\n\n\n\nPara este proyecto se eligieron siete fuentes principales de generación:\n\nCoal\nGas\nOil\nNuclear\nHydropower\nWind\nSolar\n\n\nfuentes = [\"Coal\", \"Gas\", \"Oil\", \"Nuclear\", \"Hydropower\", \"Wind\", \"Solar\"]\ncolumnas_base = [\"Entity\", \"Code\", \"Year\"] + fuentes\ndf = df[columnas_base].copy()\ndf.head()\n\n\n\n\n\n\n\n\nEntity\nCode\nYear\nCoal\nGas\nOil\nNuclear\nHydropower\nWind\nSolar\n\n\n\n\n0\nASEAN (Ember)\nNaN\n2000\n76.03\n164.26\n65.07\n0.0\n50.45\n0.0\n0.0\n\n\n1\nASEAN (Ember)\nNaN\n2001\n86.26\n190.41\n50.99\n0.0\n54.33\n0.0\n0.0\n\n\n2\nASEAN (Ember)\nNaN\n2002\n93.43\n208.92\n54.32\n0.0\n53.29\n0.0\n0.0\n\n\n3\nASEAN (Ember)\nNaN\n2003\n102.01\n226.51\n53.38\n0.0\n53.21\n0.0\n0.0\n\n\n4\nASEAN (Ember)\nNaN\n2004\n115.01\n244.16\n59.50\n0.0\n52.99\n0.0\n0.0\n\n\n\n\n\n\n\n\n\n\nPara mantener la visualización legible y comparativa, se seleccionaron cinco continentes y cinco países por continente. Además, se restringió el análisis al periodo 1990–2024 para trabajar con más de tres décadas de información y reducir problemas de cobertura incompleta en años más antiguos.\n\npaises_por_continente = {\n    \"Africa\": [\"South Africa\", \"Egypt\", \"Algeria\", \"Morocco\", \"Nigeria\"],\n    \"Asia\": [\"China\", \"India\", \"Japan\", \"South Korea\", \"Indonesia\"],\n    \"Europe\": [\"Germany\", \"France\", \"Spain\", \"Norway\", \"Poland\"],\n    \"North America\": [\"United States\", \"Canada\", \"Mexico\", \"Cuba\", \"Dominican Republic\"],\n    \"South America\": [\"Brazil\", \"Argentina\", \"Chile\", \"Colombia\", \"Ecuador\"]\n}\n\npaises = [pais for lista in paises_por_continente.values() for pais in lista]\n\ndf = df[\n    (df[\"Entity\"].isin(paises)) &\n    (df[\"Year\"] &gt;= 1990) &\n    (df[\"Year\"] &lt;= 2024)\n].copy()\n\nprint(\"Dimensiones después del filtrado:\", df.shape)\nprint(\"Países incluidos:\", df[\"Entity\"].nunique())\nprint(\"Años:\", df[\"Year\"].min(), \"-\", df[\"Year\"].max())\n\nDimensiones después del filtrado: (860, 10)\nPaíses incluidos: 25\nAños: 1990 - 2024\n\n\n\n\n\nSe creó una variable de continente para facilitar las comparaciones regionales.\n\nmapa_continente = {}\nfor continente, lista in paises_por_continente.items():\n    for pais in lista:\n        mapa_continente[pais] = continente\n\ndf[\"Continent\"] = df[\"Entity\"].map(mapa_continente)\ndf[[\"Entity\", \"Continent\"]].drop_duplicates().head()\n\n\n\n\n\n\n\n\nEntity\nContinent\n\n\n\n\n241\nAlgeria\nAfrica\n\n\n409\nArgentina\nSouth America\n\n\n1291\nBrazil\nSouth America\n\n\n1653\nCanada\nNorth America\n\n\n1903\nChile\nSouth America\n\n\n\n\n\n\n\n\n\n\nSe verificó que no existieran filas duplicadas por país y año.\n\nduplicados = df.duplicated(subset=[\"Entity\", \"Year\"]).sum()\nprint(\"Duplicados por Entity-Year:\", duplicados)\n\nDuplicados por Entity-Year: 0\n\n\n\n\n\nLos valores faltantes en las fuentes seleccionadas se reemplazaron por cero para mantener consistencia temporal entre países y años. Esta decisión se adoptó para evitar interrupciones en las series y facilitar la comparación visual.\n\ndf[fuentes] = df[fuentes].fillna(0)\ndf[fuentes].isna().sum()\n\nCoal          0\nGas           0\nOil           0\nNuclear       0\nHydropower    0\nWind          0\nSolar         0\ndtype: int64\n\n\n\n\n\nSe añadieron variables útiles para el análisis comparativo, como la generación total por país y año, así como agregados por tipo de fuente.\n\ndf[\"Total generation\"] = df[fuentes].sum(axis=1)\ndf[\"Fossil generation\"] = df[\"Coal\"] + df[\"Gas\"] + df[\"Oil\"]\ndf[\"Low carbon generation\"] = df[\"Nuclear\"] + df[\"Hydropower\"] + df[\"Wind\"] + df[\"Solar\"]\n\ndf[[\"Entity\", \"Year\", \"Total generation\", \"Fossil generation\", \"Low carbon generation\"]].head()\n\n\n\n\n\n\n\n\nEntity\nYear\nTotal generation\nFossil generation\nLow carbon generation\n\n\n\n\n241\nAlgeria\n1990\n0.135\n0.0\n0.135\n\n\n242\nAlgeria\n1991\n0.293\n0.0\n0.293\n\n\n243\nAlgeria\n1992\n0.199\n0.0\n0.199\n\n\n244\nAlgeria\n1993\n0.353\n0.0\n0.353\n\n\n245\nAlgeria\n1994\n0.166\n0.0\n0.166\n\n\n\n\n\n\n\n\n\n\nPara algunas visualizaciones fue útil trabajar no solo con valores absolutos, sino también con la participación de cada fuente respecto al total de generación.\n\nfor fuente in fuentes:\n    df[f\"Share_{fuente}\"] = df[fuente] / df[\"Total generation\"].replace(0, pd.NA)\n\ndf.columns\n\nIndex(['Entity', 'Code', 'Year', 'Coal', 'Gas', 'Oil', 'Nuclear', 'Hydropower',\n       'Wind', 'Solar', 'Continent', 'Total generation', 'Fossil generation',\n       'Low carbon generation', 'Share_Coal', 'Share_Gas', 'Share_Oil',\n       'Share_Nuclear', 'Share_Hydropower', 'Share_Wind', 'Share_Solar'],\n      dtype='object')\n\n\n\n\n\nSe creó una variable que identifica la fuente con mayor generación en cada país y año.\n\ndf[\"Dominant source\"] = df[fuentes].idxmax(axis=1)\ndf[[\"Entity\", \"Year\", \"Dominant source\"]].head()\n\n\n\n\n\n\n\n\nEntity\nYear\nDominant source\n\n\n\n\n241\nAlgeria\n1990\nHydropower\n\n\n242\nAlgeria\n1991\nHydropower\n\n\n243\nAlgeria\n1992\nHydropower\n\n\n244\nAlgeria\n1993\nHydropower\n\n\n245\nAlgeria\n1994\nHydropower\n\n\n\n\n\n\n\n\n\n\nComo Altair trabaja especialmente bien con datos en formato largo, se transformó la tabla.\n\ndf_long = df.melt(\n    id_vars=[\"Entity\", \"Continent\", \"Year\", \"Total generation\", \"Fossil generation\", \"Low carbon generation\", \"Dominant source\"],\n    value_vars=fuentes,\n    var_name=\"Source\",\n    value_name=\"Generation TWh\"\n)\n\ndf_long.head()\n\n\n\n\n\n\n\n\nEntity\nContinent\nYear\nTotal generation\nFossil generation\nLow carbon generation\nDominant source\nSource\nGeneration TWh\n\n\n\n\n0\nAlgeria\nAfrica\n1990\n0.135\n0.0\n0.135\nHydropower\nCoal\n0.0\n\n\n1\nAlgeria\nAfrica\n1991\n0.293\n0.0\n0.293\nHydropower\nCoal\n0.0\n\n\n2\nAlgeria\nAfrica\n1992\n0.199\n0.0\n0.199\nHydropower\nCoal\n0.0\n\n\n3\nAlgeria\nAfrica\n1993\n0.353\n0.0\n0.353\nHydropower\nCoal\n0.0\n\n\n4\nAlgeria\nAfrica\n1994\n0.166\n0.0\n0.166\nHydropower\nCoal\n0.0\n\n\n\n\n\n\n\nTambién se calcularon participaciones en formato largo.\n\ndf_long[\"Share\"] = np.where(\n    df_long[\"Total generation\"] &gt; 0,\n    df_long[\"Generation TWh\"] / df_long[\"Total generation\"],\n    0\n)\n\n\n\n\nAl final del proceso se obtuvieron dos tablas principales:\ndf: tabla ancha, útil para cálculos y comparación rápida.\ndf_long: tabla larga, útil para visualizaciones en Altair.\n\nprint(\"Tabla ancha:\", df.shape)\nprint(\"Tabla larga:\", df_long.shape)\n\nTabla ancha: (860, 22)\nTabla larga: (6020, 10)\n\n\n\n\n\nLas decisiones de limpieza y transformación se tomaron con tres objetivos principales:\n\nAsegurar comparabilidad entre países y continentes.\nMantener una cobertura temporal suficientemente amplia.\nConstruir visualizaciones claras para un público no técnico.\n\nEl análisis principal del proyecto se basa en una tabla limpia y estructurada para visualizaciones explicativas.",
+    "crumbs": [
+      "Home",
+      "Limpieza y preparación de datos"
+    ]
+  },
+  {
+    "objectID": "data_cleaning.html#carga-del-dataset",
+    "href": "data_cleaning.html#carga-del-dataset",
+    "title": "Limpieza y preparación de datos",
+    "section": "",
+    "text": "En esta etapa se cargó el dataset original de producción eléctrica por fuente, con información anual para múltiples países y regiones. Las variables principales incluyeron el nombre de la entidad, el año y la generación eléctrica por distintas fuentes.\n\nimport pandas as pd\nimport numpy as np\n\ndf = pd.read_csv(\"electricity-production-by-source.csv\")\ndf.head()\n\n\n\n\n\n\n\n\nEntity\nCode\nYear\nCoal\nGas\nNuclear\nHydropower\nSolar\nOil\nWind\nBioenergy\nOther renewables\n\n\n\n\n0\nASEAN (Ember)\nNaN\n2000\n76.03\n164.26\n0.0\n50.45\n0.0\n65.07\n0.0\n5.87\n16.93\n\n\n1\nASEAN (Ember)\nNaN\n2001\n86.26\n190.41\n0.0\n54.33\n0.0\n50.99\n0.0\n6.46\n16.40\n\n\n2\nASEAN (Ember)\nNaN\n2002\n93.43\n208.92\n0.0\n53.29\n0.0\n54.32\n0.0\n6.62\n16.61\n\n\n3\nASEAN (Ember)\nNaN\n2003\n102.01\n226.51\n0.0\n53.21\n0.0\n53.38\n0.0\n7.45\n15.74\n\n\n4\nASEAN (Ember)\nNaN\n2004\n115.01\n244.16\n0.0\n52.99\n0.0\n59.50\n0.0\n8.40\n16.57",
+    "crumbs": [
+      "Home",
+      "Limpieza y preparación de datos"
+    ]
+  },
+  {
+    "objectID": "data_cleaning.html#exploración-inicial",
+    "href": "data_cleaning.html#exploración-inicial",
+    "title": "Limpieza y preparación de datos",
+    "section": "",
+    "text": "Se realizó una revisión inicial del tamaño del dataset, los nombres de las columnas, el rango temporal y las entidades disponibles.\n\nprint(\"Dimensiones:\", df.shape)\nprint(\"Columnas:\", df.columns.tolist())\nprint(\"Años:\", df[\"Year\"].min(), \"-\", df[\"Year\"].max())\nprint(\"Número de entidades:\", df[\"Entity\"].nunique())\n\nDimensiones: (10170, 12)\nColumnas: ['Entity', 'Code', 'Year', 'Coal', 'Gas', 'Nuclear', 'Hydropower', 'Solar', 'Oil', 'Wind', 'Bioenergy', 'Other renewables']\nAños: 1965 - 2025\nNúmero de entidades: 253\n\n\nTambién se identificaron los tipos de datos:\n\ndf.dtypes\n\nEntity               object\nCode                 object\nYear                  int64\nCoal                float64\nGas                 float64\nNuclear             float64\nHydropower          float64\nSolar               float64\nOil                 float64\nWind                float64\nBioenergy           float64\nOther renewables    float64\ndtype: object\n\n\nEsta exploración permitió identificar que el dataset contenía más entidades de las necesarias para el análisis final, por lo que fue necesario realizar una selección.",
+    "crumbs": [
+      "Home",
+      "Limpieza y preparación de datos"
+    ]
+  },
+  {
+    "objectID": "data_cleaning.html#selección-de-variables-relevantes",
+    "href": "data_cleaning.html#selección-de-variables-relevantes",
+    "title": "Limpieza y preparación de datos",
+    "section": "",
+    "text": "Para este proyecto se eligieron siete fuentes principales de generación:\n\nCoal\nGas\nOil\nNuclear\nHydropower\nWind\nSolar\n\n\nfuentes = [\"Coal\", \"Gas\", \"Oil\", \"Nuclear\", \"Hydropower\", \"Wind\", \"Solar\"]\ncolumnas_base = [\"Entity\", \"Code\", \"Year\"] + fuentes\ndf = df[columnas_base].copy()\ndf.head()\n\n\n\n\n\n\n\n\nEntity\nCode\nYear\nCoal\nGas\nOil\nNuclear\nHydropower\nWind\nSolar\n\n\n\n\n0\nASEAN (Ember)\nNaN\n2000\n76.03\n164.26\n65.07\n0.0\n50.45\n0.0\n0.0\n\n\n1\nASEAN (Ember)\nNaN\n2001\n86.26\n190.41\n50.99\n0.0\n54.33\n0.0\n0.0\n\n\n2\nASEAN (Ember)\nNaN\n2002\n93.43\n208.92\n54.32\n0.0\n53.29\n0.0\n0.0\n\n\n3\nASEAN (Ember)\nNaN\n2003\n102.01\n226.51\n53.38\n0.0\n53.21\n0.0\n0.0\n\n\n4\nASEAN (Ember)\nNaN\n2004\n115.01\n244.16\n59.50\n0.0\n52.99\n0.0\n0.0",
+    "crumbs": [
+      "Home",
+      "Limpieza y preparación de datos"
+    ]
+  },
+  {
+    "objectID": "data_cleaning.html#selección-de-países-y-periodo-de-análisis",
+    "href": "data_cleaning.html#selección-de-países-y-periodo-de-análisis",
+    "title": "Limpieza y preparación de datos",
+    "section": "",
+    "text": "Para mantener la visualización legible y comparativa, se seleccionaron cinco continentes y cinco países por continente. Además, se restringió el análisis al periodo 1990–2024 para trabajar con más de tres décadas de información y reducir problemas de cobertura incompleta en años más antiguos.\n\npaises_por_continente = {\n    \"Africa\": [\"South Africa\", \"Egypt\", \"Algeria\", \"Morocco\", \"Nigeria\"],\n    \"Asia\": [\"China\", \"India\", \"Japan\", \"South Korea\", \"Indonesia\"],\n    \"Europe\": [\"Germany\", \"France\", \"Spain\", \"Norway\", \"Poland\"],\n    \"North America\": [\"United States\", \"Canada\", \"Mexico\", \"Cuba\", \"Dominican Republic\"],\n    \"South America\": [\"Brazil\", \"Argentina\", \"Chile\", \"Colombia\", \"Ecuador\"]\n}\n\npaises = [pais for lista in paises_por_continente.values() for pais in lista]\n\ndf = df[\n    (df[\"Entity\"].isin(paises)) &\n    (df[\"Year\"] &gt;= 1990) &\n    (df[\"Year\"] &lt;= 2024)\n].copy()\n\nprint(\"Dimensiones después del filtrado:\", df.shape)\nprint(\"Países incluidos:\", df[\"Entity\"].nunique())\nprint(\"Años:\", df[\"Year\"].min(), \"-\", df[\"Year\"].max())\n\nDimensiones después del filtrado: (860, 10)\nPaíses incluidos: 25\nAños: 1990 - 2024",
+    "crumbs": [
+      "Home",
+      "Limpieza y preparación de datos"
+    ]
+  },
+  {
+    "objectID": "data_cleaning.html#asignación-de-continente",
+    "href": "data_cleaning.html#asignación-de-continente",
+    "title": "Limpieza y preparación de datos",
+    "section": "",
+    "text": "Se creó una variable de continente para facilitar las comparaciones regionales.\n\nmapa_continente = {}\nfor continente, lista in paises_por_continente.items():\n    for pais in lista:\n        mapa_continente[pais] = continente\n\ndf[\"Continent\"] = df[\"Entity\"].map(mapa_continente)\ndf[[\"Entity\", \"Continent\"]].drop_duplicates().head()\n\n\n\n\n\n\n\n\nEntity\nContinent\n\n\n\n\n241\nAlgeria\nAfrica\n\n\n409\nArgentina\nSouth America\n\n\n1291\nBrazil\nSouth America\n\n\n1653\nCanada\nNorth America\n\n\n1903\nChile\nSouth America",
+    "crumbs": [
+      "Home",
+      "Limpieza y preparación de datos"
+    ]
+  },
+  {
+    "objectID": "data_cleaning.html#revisión-de-duplicados",
+    "href": "data_cleaning.html#revisión-de-duplicados",
+    "title": "Limpieza y preparación de datos",
+    "section": "",
+    "text": "Se verificó que no existieran filas duplicadas por país y año.\n\nduplicados = df.duplicated(subset=[\"Entity\", \"Year\"]).sum()\nprint(\"Duplicados por Entity-Year:\", duplicados)\n\nDuplicados por Entity-Year: 0",
+    "crumbs": [
+      "Home",
+      "Limpieza y preparación de datos"
+    ]
+  },
+  {
+    "objectID": "data_cleaning.html#manejo-de-valores-faltantes",
+    "href": "data_cleaning.html#manejo-de-valores-faltantes",
+    "title": "Limpieza y preparación de datos",
+    "section": "",
+    "text": "Los valores faltantes en las fuentes seleccionadas se reemplazaron por cero para mantener consistencia temporal entre países y años. Esta decisión se adoptó para evitar interrupciones en las series y facilitar la comparación visual.\n\ndf[fuentes] = df[fuentes].fillna(0)\ndf[fuentes].isna().sum()\n\nCoal          0\nGas           0\nOil           0\nNuclear       0\nHydropower    0\nWind          0\nSolar         0\ndtype: int64",
+    "crumbs": [
+      "Home",
+      "Limpieza y preparación de datos"
+    ]
+  },
+  {
+    "objectID": "data_cleaning.html#creación-de-variables-auxiliares",
+    "href": "data_cleaning.html#creación-de-variables-auxiliares",
+    "title": "Limpieza y preparación de datos",
+    "section": "",
+    "text": "Se añadieron variables útiles para el análisis comparativo, como la generación total por país y año, así como agregados por tipo de fuente.\n\ndf[\"Total generation\"] = df[fuentes].sum(axis=1)\ndf[\"Fossil generation\"] = df[\"Coal\"] + df[\"Gas\"] + df[\"Oil\"]\ndf[\"Low carbon generation\"] = df[\"Nuclear\"] + df[\"Hydropower\"] + df[\"Wind\"] + df[\"Solar\"]\n\ndf[[\"Entity\", \"Year\", \"Total generation\", \"Fossil generation\", \"Low carbon generation\"]].head()\n\n\n\n\n\n\n\n\nEntity\nYear\nTotal generation\nFossil generation\nLow carbon generation\n\n\n\n\n241\nAlgeria\n1990\n0.135\n0.0\n0.135\n\n\n242\nAlgeria\n1991\n0.293\n0.0\n0.293\n\n\n243\nAlgeria\n1992\n0.199\n0.0\n0.199\n\n\n244\nAlgeria\n1993\n0.353\n0.0\n0.353\n\n\n245\nAlgeria\n1994\n0.166\n0.0\n0.166",
+    "crumbs": [
+      "Home",
+      "Limpieza y preparación de datos"
+    ]
+  },
+  {
+    "objectID": "data_cleaning.html#cálculo-de-participaciones-porcentuales",
+    "href": "data_cleaning.html#cálculo-de-participaciones-porcentuales",
+    "title": "Limpieza y preparación de datos",
+    "section": "",
+    "text": "Para algunas visualizaciones fue útil trabajar no solo con valores absolutos, sino también con la participación de cada fuente respecto al total de generación.\n\nfor fuente in fuentes:\n    df[f\"Share_{fuente}\"] = df[fuente] / df[\"Total generation\"].replace(0, pd.NA)\n\ndf.columns\n\nIndex(['Entity', 'Code', 'Year', 'Coal', 'Gas', 'Oil', 'Nuclear', 'Hydropower',\n       'Wind', 'Solar', 'Continent', 'Total generation', 'Fossil generation',\n       'Low carbon generation', 'Share_Coal', 'Share_Gas', 'Share_Oil',\n       'Share_Nuclear', 'Share_Hydropower', 'Share_Wind', 'Share_Solar'],\n      dtype='object')",
+    "crumbs": [
+      "Home",
+      "Limpieza y preparación de datos"
+    ]
+  },
+  {
+    "objectID": "data_cleaning.html#identificación-de-fuente-dominante",
+    "href": "data_cleaning.html#identificación-de-fuente-dominante",
+    "title": "Limpieza y preparación de datos",
+    "section": "",
+    "text": "Se creó una variable que identifica la fuente con mayor generación en cada país y año.\n\ndf[\"Dominant source\"] = df[fuentes].idxmax(axis=1)\ndf[[\"Entity\", \"Year\", \"Dominant source\"]].head()\n\n\n\n\n\n\n\n\nEntity\nYear\nDominant source\n\n\n\n\n241\nAlgeria\n1990\nHydropower\n\n\n242\nAlgeria\n1991\nHydropower\n\n\n243\nAlgeria\n1992\nHydropower\n\n\n244\nAlgeria\n1993\nHydropower\n\n\n245\nAlgeria\n1994\nHydropower",
+    "crumbs": [
+      "Home",
+      "Limpieza y preparación de datos"
+    ]
+  },
+  {
+    "objectID": "data_cleaning.html#transformación-a-formato-largo-para-visualización",
+    "href": "data_cleaning.html#transformación-a-formato-largo-para-visualización",
+    "title": "Limpieza y preparación de datos",
+    "section": "",
+    "text": "Como Altair trabaja especialmente bien con datos en formato largo, se transformó la tabla.\n\ndf_long = df.melt(\n    id_vars=[\"Entity\", \"Continent\", \"Year\", \"Total generation\", \"Fossil generation\", \"Low carbon generation\", \"Dominant source\"],\n    value_vars=fuentes,\n    var_name=\"Source\",\n    value_name=\"Generation TWh\"\n)\n\ndf_long.head()\n\n\n\n\n\n\n\n\nEntity\nContinent\nYear\nTotal generation\nFossil generation\nLow carbon generation\nDominant source\nSource\nGeneration TWh\n\n\n\n\n0\nAlgeria\nAfrica\n1990\n0.135\n0.0\n0.135\nHydropower\nCoal\n0.0\n\n\n1\nAlgeria\nAfrica\n1991\n0.293\n0.0\n0.293\nHydropower\nCoal\n0.0\n\n\n2\nAlgeria\nAfrica\n1992\n0.199\n0.0\n0.199\nHydropower\nCoal\n0.0\n\n\n3\nAlgeria\nAfrica\n1993\n0.353\n0.0\n0.353\nHydropower\nCoal\n0.0\n\n\n4\nAlgeria\nAfrica\n1994\n0.166\n0.0\n0.166\nHydropower\nCoal\n0.0\n\n\n\n\n\n\n\nTambién se calcularon participaciones en formato largo.\n\ndf_long[\"Share\"] = np.where(\n    df_long[\"Total generation\"] &gt; 0,\n    df_long[\"Generation TWh\"] / df_long[\"Total generation\"],\n    0\n)",
+    "crumbs": [
+      "Home",
+      "Limpieza y preparación de datos"
+    ]
+  },
+  {
+    "objectID": "data_cleaning.html#tablas-finales-para-el-análisis",
+    "href": "data_cleaning.html#tablas-finales-para-el-análisis",
+    "title": "Limpieza y preparación de datos",
+    "section": "",
+    "text": "Al final del proceso se obtuvieron dos tablas principales:\ndf: tabla ancha, útil para cálculos y comparación rápida.\ndf_long: tabla larga, útil para visualizaciones en Altair.\n\nprint(\"Tabla ancha:\", df.shape)\nprint(\"Tabla larga:\", df_long.shape)\n\nTabla ancha: (860, 22)\nTabla larga: (6020, 10)",
+    "crumbs": [
+      "Home",
+      "Limpieza y preparación de datos"
+    ]
+  },
+  {
+    "objectID": "data_cleaning.html#justificación-de-las-decisiones-tomadas",
+    "href": "data_cleaning.html#justificación-de-las-decisiones-tomadas",
+    "title": "Limpieza y preparación de datos",
+    "section": "",
+    "text": "Las decisiones de limpieza y transformación se tomaron con tres objetivos principales:\n\nAsegurar comparabilidad entre países y continentes.\nMantener una cobertura temporal suficientemente amplia.\nConstruir visualizaciones claras para un público no técnico.\n\nEl análisis principal del proyecto se basa en una tabla limpia y estructurada para visualizaciones explicativas.",
+    "crumbs": [
+      "Home",
+      "Limpieza y preparación de datos"
+    ]
+  },
+  {
+    "objectID": "viz.html",
+    "href": "viz.html",
+    "title": "Análisis y visualizaciones",
+    "section": "",
+    "text": "import pandas as pd\nimport numpy as np\nimport altair as alt\n\nalt.data_transformers.disable_max_rows()\n\nDataTransformerRegistry.enable('default')\n\n\n\n\n\n\nPara responder esta pregunta se seleccionaron cinco países representativos: China, Estados Unidos, Brasil, Francia y Noruega.\n\npaises_ejemplo = [\"China\", \"United States\", \"Brazil\", \"France\", \"Norway\"]\ndf_q1 = df_long[df_long[\"Entity\"].isin(paises_ejemplo)].copy()\n\nchart1 = alt.Chart(df_q1).mark_area().encode(\n    x=alt.X(\"Year:O\", title=\"Año\"),\n    y=alt.Y(\"Generation_TWh:Q\", title=\"Generación eléctrica (TWh)\", stack=\"zero\"),\n    color=alt.Color(\"Source:N\", title=\"Fuente\"),\n    tooltip=[\"Entity:N\", \"Year:O\", \"Source:N\", \"Generation_TWh:Q\"]\n).properties(\n    width=220,\n    height=180\n).facet(\n    column=alt.Column(\"Entity:N\", title=None)\n)\n\nchart1\n\n\n\n\n\n\n\nInterpretación\nLa composición de la generación eléctrica cambia de manera desigual entre países. China muestra un fuerte predominio del carbón; Estados Unidos refleja una reducción relativa del carbón y un aumento del gas; Brasil y Noruega mantienen una alta presencia de hidroelectricidad; y Francia destaca por la importancia de la energía nuclear.\n\n\n\n\n\n\nPara comparar regiones, se agregaron los valores de los países seleccionados dentro de cada continente.\n\ncontinent_source_year = (\n    df_long.groupby([\"Continent\", \"Year\", \"Source\"], as_index=False)[\"Generation_TWh\"]\n    .sum()\n)\n\nchart2 = alt.Chart(continent_source_year).mark_line().encode(\n    x=alt.X(\"Year:O\", title=\"Año\"),\n    y=alt.Y(\"Generation_TWh:Q\", title=\"Generación eléctrica (TWh)\"),\n    color=alt.Color(\"Source:N\", title=\"Fuente\"),\n    tooltip=[\"Continent:N\", \"Year:O\", \"Source:N\", \"Generation_TWh:Q\"]\n).properties(\n    width=220,\n    height=180\n).facet(\n    column=alt.Column(\"Continent:N\", title=None)\n)\n\nchart2\n\n\n\n\n\n\n\nInterpretación\nLas trayectorias regionales también son diferentes. Asia concentra gran parte del crecimiento del carbón, mientras Sudamérica presenta una presencia más importante de la hidroelectricidad. Europa muestra una mezcla más diversificada, con participación visible de nuclear, hidro y renovables recientes.\n\n\n\n\n\n\nPara responder esta pregunta se compara la composición relativa de la generación eléctrica en el año 2024. En lugar de observar únicamente valores absolutos, se utiliza la participación de cada fuente dentro del total generado por país. Esto permite distinguir con mayor claridad entre matrices concentradas en una o dos fuentes y matrices más equilibradas.\n\ndf_2024 = df_long[df_long[\"Year\"] == 2024].copy()\n\nchart3 = alt.Chart(df_2024).mark_bar().encode(\n    x=alt.X(\"Entity:N\", sort=\"-y\", title=\"País\"),\n    y=alt.Y(\"sum(Share):Q\", stack=\"normalize\", title=\"Participación relativa\"),\n    color=alt.Color(\"Source:N\", title=\"Fuente\"),\n    tooltip=[\"Entity:N\", \"Source:N\", alt.Tooltip(\"Share:Q\", format=\".2f\")]\n).properties(\n    width=700,\n    height=400\n)\n\nchart3\n\n\n\n\n\n\n\n\norden_paises = []\nfor continente, lista in paises_por_continente.items():\n    orden_paises.extend(lista)\ndf_2024 = df_long[df_long[\"Year\"] == 2024].copy()\n\nheatmap = alt.Chart(df_2024).mark_rect().encode(\n    x=alt.X(\"Source:N\", title=\"Fuente\"),\n    y=alt.Y(\"Entity:N\", sort=orden_paises, title=\"País\"),\n    color=alt.Color(\"Share:Q\", title=\"Participación\", scale=alt.Scale(scheme=\"blues\")),\n    tooltip=[\n        alt.Tooltip(\"Entity:N\", title=\"País\"),\n        alt.Tooltip(\"Continent:N\", title=\"Continente\"),\n        alt.Tooltip(\"Source:N\", title=\"Fuente\"),\n        alt.Tooltip(\"Share:Q\", title=\"Participación\", format=\".2%\")\n    ]\n).properties(\n    width=500,\n    height=500\n)\n\nheatmap\n\n\n\n\n\n\n\nInterpretación\nLa comparación de 2024 permite distinguir entre matrices altamente concentradas y matrices más diversificadas. En algunos países una o dos fuentes dominan claramente la generación eléctrica, mientras que en otros la producción se reparte de forma más equilibrada entre varias tecnologías.\nEl heatmap permite comparar de forma compacta la composición relativa de la generación eléctrica en los países analizados. Los tonos más intensos indican una mayor dependencia de una fuente determinada, mientras que una distribución más equilibrada de colores sugiere una matriz más diversificada.\n\n\n\n\nEl análisis muestra que la generación eléctrica ha cambiado de forma desigual entre los países y continentes analizados. Algunas matrices continúan dominadas por combustibles fósiles, especialmente el carbón, mientras otras mantienen una presencia fuerte de hidroelectricidad o energía nuclear. Además, la solar y la eólica muestran un crecimiento progresivo en los años recientes, aunque con distinta intensidad según el país y la región.",
+    "crumbs": [
+      "Home",
+      "Análisis y visualizaciones"
+    ]
+  },
+  {
+    "objectID": "viz.html#pregunta-1",
+    "href": "viz.html#pregunta-1",
+    "title": "Análisis y visualizaciones",
+    "section": "",
+    "text": "Para responder esta pregunta se seleccionaron cinco países representativos: China, Estados Unidos, Brasil, Francia y Noruega.\n\npaises_ejemplo = [\"China\", \"United States\", \"Brazil\", \"France\", \"Norway\"]\ndf_q1 = df_long[df_long[\"Entity\"].isin(paises_ejemplo)].copy()\n\nchart1 = alt.Chart(df_q1).mark_area().encode(\n    x=alt.X(\"Year:O\", title=\"Año\"),\n    y=alt.Y(\"Generation_TWh:Q\", title=\"Generación eléctrica (TWh)\", stack=\"zero\"),\n    color=alt.Color(\"Source:N\", title=\"Fuente\"),\n    tooltip=[\"Entity:N\", \"Year:O\", \"Source:N\", \"Generation_TWh:Q\"]\n).properties(\n    width=220,\n    height=180\n).facet(\n    column=alt.Column(\"Entity:N\", title=None)\n)\n\nchart1\n\n\n\n\n\n\n\nInterpretación\nLa composición de la generación eléctrica cambia de manera desigual entre países. China muestra un fuerte predominio del carbón; Estados Unidos refleja una reducción relativa del carbón y un aumento del gas; Brasil y Noruega mantienen una alta presencia de hidroelectricidad; y Francia destaca por la importancia de la energía nuclear.",
+    "crumbs": [
+      "Home",
+      "Análisis y visualizaciones"
+    ]
+  },
+  {
+    "objectID": "viz.html#pregunta-2",
+    "href": "viz.html#pregunta-2",
+    "title": "Análisis y visualizaciones",
+    "section": "",
+    "text": "Para comparar regiones, se agregaron los valores de los países seleccionados dentro de cada continente.\n\ncontinent_source_year = (\n    df_long.groupby([\"Continent\", \"Year\", \"Source\"], as_index=False)[\"Generation_TWh\"]\n    .sum()\n)\n\nchart2 = alt.Chart(continent_source_year).mark_line().encode(\n    x=alt.X(\"Year:O\", title=\"Año\"),\n    y=alt.Y(\"Generation_TWh:Q\", title=\"Generación eléctrica (TWh)\"),\n    color=alt.Color(\"Source:N\", title=\"Fuente\"),\n    tooltip=[\"Continent:N\", \"Year:O\", \"Source:N\", \"Generation_TWh:Q\"]\n).properties(\n    width=220,\n    height=180\n).facet(\n    column=alt.Column(\"Continent:N\", title=None)\n)\n\nchart2\n\n\n\n\n\n\n\nInterpretación\nLas trayectorias regionales también son diferentes. Asia concentra gran parte del crecimiento del carbón, mientras Sudamérica presenta una presencia más importante de la hidroelectricidad. Europa muestra una mezcla más diversificada, con participación visible de nuclear, hidro y renovables recientes.",
+    "crumbs": [
+      "Home",
+      "Análisis y visualizaciones"
+    ]
+  },
+  {
+    "objectID": "viz.html#pregunta-3",
+    "href": "viz.html#pregunta-3",
+    "title": "Análisis y visualizaciones",
+    "section": "",
+    "text": "Para responder esta pregunta se compara la composición relativa de la generación eléctrica en el año 2024. En lugar de observar únicamente valores absolutos, se utiliza la participación de cada fuente dentro del total generado por país. Esto permite distinguir con mayor claridad entre matrices concentradas en una o dos fuentes y matrices más equilibradas.\n\ndf_2024 = df_long[df_long[\"Year\"] == 2024].copy()\n\nchart3 = alt.Chart(df_2024).mark_bar().encode(\n    x=alt.X(\"Entity:N\", sort=\"-y\", title=\"País\"),\n    y=alt.Y(\"sum(Share):Q\", stack=\"normalize\", title=\"Participación relativa\"),\n    color=alt.Color(\"Source:N\", title=\"Fuente\"),\n    tooltip=[\"Entity:N\", \"Source:N\", alt.Tooltip(\"Share:Q\", format=\".2f\")]\n).properties(\n    width=700,\n    height=400\n)\n\nchart3\n\n\n\n\n\n\n\n\norden_paises = []\nfor continente, lista in paises_por_continente.items():\n    orden_paises.extend(lista)\ndf_2024 = df_long[df_long[\"Year\"] == 2024].copy()\n\nheatmap = alt.Chart(df_2024).mark_rect().encode(\n    x=alt.X(\"Source:N\", title=\"Fuente\"),\n    y=alt.Y(\"Entity:N\", sort=orden_paises, title=\"País\"),\n    color=alt.Color(\"Share:Q\", title=\"Participación\", scale=alt.Scale(scheme=\"blues\")),\n    tooltip=[\n        alt.Tooltip(\"Entity:N\", title=\"País\"),\n        alt.Tooltip(\"Continent:N\", title=\"Continente\"),\n        alt.Tooltip(\"Source:N\", title=\"Fuente\"),\n        alt.Tooltip(\"Share:Q\", title=\"Participación\", format=\".2%\")\n    ]\n).properties(\n    width=500,\n    height=500\n)\n\nheatmap\n\n\n\n\n\n\n\nInterpretación\nLa comparación de 2024 permite distinguir entre matrices altamente concentradas y matrices más diversificadas. En algunos países una o dos fuentes dominan claramente la generación eléctrica, mientras que en otros la producción se reparte de forma más equilibrada entre varias tecnologías.\nEl heatmap permite comparar de forma compacta la composición relativa de la generación eléctrica en los países analizados. Los tonos más intensos indican una mayor dependencia de una fuente determinada, mientras que una distribución más equilibrada de colores sugiere una matriz más diversificada.",
+    "crumbs": [
+      "Home",
+      "Análisis y visualizaciones"
+    ]
+  },
+  {
+    "objectID": "viz.html#conclusión-general",
+    "href": "viz.html#conclusión-general",
+    "title": "Análisis y visualizaciones",
+    "section": "",
+    "text": "El análisis muestra que la generación eléctrica ha cambiado de forma desigual entre los países y continentes analizados. Algunas matrices continúan dominadas por combustibles fósiles, especialmente el carbón, mientras otras mantienen una presencia fuerte de hidroelectricidad o energía nuclear. Además, la solar y la eólica muestran un crecimiento progresivo en los años recientes, aunque con distinta intensidad según el país y la región.",
+    "crumbs": [
+      "Home",
+      "Análisis y visualizaciones"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Tres décadas de cambio en la generación eléctrica",
+    "section": "",
+    "text": "Introducción\nLa generación eléctrica es un componente central del desarrollo económico, la planificación energética y la transición hacia sistemas de menor impacto ambiental. Sin embargo, la evolución de la matriz eléctrica no ha seguido una trayectoria uniforme en todos los países. Mientras algunos continúan dependiendo en gran medida de combustibles fósiles, otros han consolidado fuentes como la hidroelectricidad, la energía nuclear o, más recientemente, la solar y la eólica.\nEste proyecto analiza cómo ha cambiado la composición de la generación eléctrica por fuente en una selección de países de cinco continentes entre 1990 y 2024. El objetivo es identificar patrones de cambio, diferencias regionales y trayectorias energéticas contrastantes mediante visualizaciones diseñadas para un público general.\n\n\nMotivación\nComprender la evolución de la matriz eléctrica permite observar no solo diferencias tecnológicas y geográficas, sino también la forma en que los países responden a desafíos energéticos y ambientales. Comparar países de distintos continentes ayuda a mostrar que la transición energética no es un proceso homogéneo, sino una combinación de trayectorias nacionales muy diferentes.\n\n\nPregunta principal\n¿Cómo ha cambiado la composición de la generación eléctrica por fuente en países de distintos continentes entre 1990 y 2024?\n\n\nPreguntas analíticas\n\n¿Qué fuentes energéticas dominan la generación eléctrica en los países analizados y cómo ha cambiado ese dominio con el tiempo?\n¿Qué diferencias se observan entre continentes en la evolución de fuentes como carbón, gas, hidroelectricidad, nuclear, solar y eólica?\n¿Qué países presentan matrices eléctricas más diversificadas y cuáles mantienen una fuerte dependencia de pocas fuentes?\n\n\n\nDataset utilizado\nEl análisis utiliza un dataset de producción eléctrica anual por fuente energética para una selección de países de África, Asia, Europa, Norteamérica y Sudamérica. Se trabajó con siete fuentes principales: carbón, gas, petróleo, nuclear, hidroelectricidad, eólica y solar, en el periodo 1990–2024.\nLa unidad de medida utilizada es teravatios-hora (TWh), que representa la cantidad de electricidad generada por año.\nFuente del dataset: Our World in Data – Electricity production by source.\n\n\nEstructura del proyecto\nEste sitio se organiza en dos secciones principales además de esta introducción:\n\nLimpieza y preparación de datos\nAnálisis y visualizaciones\n\n\n\nCierre\nA través de este proyecto se busca combinar preparación de datos, análisis comparativo y narrativa visual para mostrar cómo cambia la matriz eléctrica en distintos contextos nacionales y regionales."
+  }
+]

@@ -1,0 +1,46 @@
+---
+title: "Tres décadas de cambio en la generación eléctrica"
+format: html
+---
+
+<div style="text-align: justify;">
+# Introducción
+
+La generación eléctrica es un componente central del desarrollo económico, la planificación energética y la transición hacia sistemas de menor impacto ambiental. Sin embargo, la evolución de la matriz eléctrica no ha seguido una trayectoria uniforme en todos los países. Mientras algunos continúan dependiendo en gran medida de combustibles fósiles, otros han consolidado fuentes como la hidroelectricidad, la energía nuclear o, más recientemente, la solar y la eólica.
+
+Este proyecto analiza cómo ha cambiado la composición de la generación eléctrica por fuente en una selección de países de cinco continentes entre 1990 y 2024. El objetivo es identificar patrones de cambio, diferencias regionales y trayectorias energéticas contrastantes mediante visualizaciones diseñadas para un público general.
+
+# Motivación
+
+Comprender la evolución de la matriz eléctrica permite observar no solo diferencias tecnológicas y geográficas, sino también la forma en que los países responden a desafíos energéticos y ambientales. Comparar países de distintos continentes ayuda a mostrar que la transición energética no es un proceso homogéneo, sino una combinación de trayectorias nacionales muy diferentes.
+
+# Pregunta principal
+
+**¿Cómo ha cambiado la composición de la generación eléctrica por fuente en países de distintos continentes entre 1990 y 2024?**
+
+# Preguntas analíticas
+
+- ¿Qué fuentes energéticas dominan la generación eléctrica en los países analizados y cómo ha cambiado ese dominio con el tiempo?
+- ¿Qué diferencias se observan entre continentes en la evolución de fuentes como carbón, gas, hidroelectricidad, nuclear, solar y eólica?
+- ¿Qué países presentan matrices eléctricas más diversificadas y cuáles mantienen una fuerte dependencia de pocas fuentes?
+
+# Dataset utilizado
+
+El análisis utiliza un dataset de producción eléctrica anual por fuente energética para una selección de países de África, Asia, Europa, Norteamérica y Sudamérica. Se trabajó con siete fuentes principales: carbón, gas, petróleo, nuclear, hidroelectricidad, eólica y solar, en el periodo 1990–2024.
+
+La unidad de medida utilizada es **teravatios-hora (TWh)**, que representa la cantidad de electricidad generada por año.
+
+**Fuente del dataset:** [Our World in Data – Electricity production by source](https://ourworldindata.org/grapher/electricity-production-by-source).
+
+# Estructura del proyecto
+
+Este sitio se organiza en dos secciones principales además de esta introducción:
+
+- [Limpieza y preparación de datos](data_cleaning.html)
+- [Análisis y visualizaciones](visualizations.html)
+
+# Cierre
+
+A través de este proyecto se busca combinar preparación de datos, análisis comparativo y narrativa visual para mostrar cómo cambia la matriz eléctrica en distintos contextos nacionales y regionales.
+
+</div>

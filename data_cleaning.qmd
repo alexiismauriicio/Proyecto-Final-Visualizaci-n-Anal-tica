@@ -1,0 +1,195 @@
+---
+title: "Limpieza y preparación de datos"
+format: html
+---
+
+<div style="text-align: justify;">
+
+## Carga del dataset
+
+En esta etapa se cargó el dataset original de producción eléctrica por fuente, con información anual para múltiples países y regiones. Las variables principales incluyeron el nombre de la entidad, el año y la generación eléctrica por distintas fuentes.
+
+```{python}
+import pandas as pd
+import numpy as np
+
+df = pd.read_csv("electricity-production-by-source.csv")
+df.head()
+```
+
+## Exploración inicial
+
+Se realizó una revisión inicial del tamaño del dataset, los nombres de las columnas, el rango temporal y las entidades disponibles.
+
+```{python}
+print("Dimensiones:", df.shape)
+print("Columnas:", df.columns.tolist())
+print("Años:", df["Year"].min(), "-", df["Year"].max())
+print("Número de entidades:", df["Entity"].nunique())
+```
+
+También se identificaron los tipos de datos:
+
+```{python}
+df.dtypes
+```
+
+Esta exploración permitió identificar que el dataset contenía más entidades de las necesarias para el análisis final, por lo que fue necesario realizar una selección.
+
+## Selección de variables relevantes
+Para este proyecto se eligieron siete fuentes principales de generación:
+
+* Coal
+* Gas
+* Oil
+* Nuclear
+* Hydropower
+* Wind
+* Solar
+
+```{python}
+
+fuentes = ["Coal", "Gas", "Oil", "Nuclear", "Hydropower", "Wind", "Solar"]
+columnas_base = ["Entity", "Code", "Year"] + fuentes
+df = df[columnas_base].copy()
+df.head()
+```
+
+
+## Selección de países y periodo de análisis
+
+Para mantener la visualización legible y comparativa, se seleccionaron cinco continentes y cinco países por continente. Además, se restringió el análisis al periodo 1990–2024 para trabajar con más de tres décadas de información y reducir problemas de cobertura incompleta en años más antiguos.
+
+```{python}
+
+paises_por_continente = {
+    "Africa": ["South Africa", "Egypt", "Algeria", "Morocco", "Nigeria"],
+    "Asia": ["China", "India", "Japan", "South Korea", "Indonesia"],
+    "Europe": ["Germany", "France", "Spain", "Norway", "Poland"],
+    "North America": ["United States", "Canada", "Mexico", "Cuba", "Dominican Republic"],
+    "South America": ["Brazil", "Argentina", "Chile", "Colombia", "Ecuador"]
+}
+
+paises = [pais for lista in paises_por_continente.values() for pais in lista]
+
+df = df[
+    (df["Entity"].isin(paises)) &
+    (df["Year"] >= 1990) &
+    (df["Year"] <= 2024)
+].copy()
+
+print("Dimensiones después del filtrado:", df.shape)
+print("Países incluidos:", df["Entity"].nunique())
+print("Años:", df["Year"].min(), "-", df["Year"].max())
+```
+
+## Asignación de continente
+Se creó una variable de continente para facilitar las comparaciones regionales.
+
+```{python}
+mapa_continente = {}
+for continente, lista in paises_por_continente.items():
+    for pais in lista:
+        mapa_continente[pais] = continente
+
+df["Continent"] = df["Entity"].map(mapa_continente)
+df[["Entity", "Continent"]].drop_duplicates().head()
+```
+
+## Revisión de duplicados
+Se verificó que no existieran filas duplicadas por país y año.
+
+```{python}
+duplicados = df.duplicated(subset=["Entity", "Year"]).sum()
+print("Duplicados por Entity-Year:", duplicados)
+```
+
+
+## Manejo de valores faltantes
+
+Los valores faltantes en las fuentes seleccionadas se reemplazaron por cero para mantener consistencia temporal entre países y años. Esta decisión se adoptó para evitar interrupciones en las series y facilitar la comparación visual.
+
+```{python}
+
+df[fuentes] = df[fuentes].fillna(0)
+df[fuentes].isna().sum()
+```
+
+## Creación de variables auxiliares
+
+Se añadieron variables útiles para el análisis comparativo, como la generación total por país y año, así como agregados por tipo de fuente.
+
+```{python}
+df["Total generation"] = df[fuentes].sum(axis=1)
+df["Fossil generation"] = df["Coal"] + df["Gas"] + df["Oil"]
+df["Low carbon generation"] = df["Nuclear"] + df["Hydropower"] + df["Wind"] + df["Solar"]
+
+df[["Entity", "Year", "Total generation", "Fossil generation", "Low carbon generation"]].head()
+```
+
+## Cálculo de participaciones porcentuales
+
+Para algunas visualizaciones fue útil trabajar no solo con valores absolutos, sino también con la participación de cada fuente respecto al total de generación.
+
+```{python}
+for fuente in fuentes:
+    df[f"Share_{fuente}"] = df[fuente] / df["Total generation"].replace(0, pd.NA)
+
+df.columns
+```
+
+## Identificación de fuente dominante
+Se creó una variable que identifica la fuente con mayor generación en cada país y año.
+
+```{python}
+df["Dominant source"] = df[fuentes].idxmax(axis=1)
+df[["Entity", "Year", "Dominant source"]].head()
+```
+
+## Transformación a formato largo para visualización
+Como Altair trabaja especialmente bien con datos en formato largo, se transformó la tabla.
+
+```{python}
+df_long = df.melt(
+    id_vars=["Entity", "Continent", "Year", "Total generation", "Fossil generation", "Low carbon generation", "Dominant source"],
+    value_vars=fuentes,
+    var_name="Source",
+    value_name="Generation TWh"
+)
+
+df_long.head()
+```
+
+También se calcularon participaciones en formato largo.
+
+```{python}
+df_long["Share"] = np.where(
+    df_long["Total generation"] > 0,
+    df_long["Generation TWh"] / df_long["Total generation"],
+    0
+)
+```
+
+## Tablas finales para el análisis
+Al final del proceso se obtuvieron dos tablas principales:
+
+**df:** tabla ancha, útil para cálculos y comparación rápida.
+
+**df_long:** tabla larga, útil para visualizaciones en Altair.
+
+```{python}
+print("Tabla ancha:", df.shape)
+print("Tabla larga:", df_long.shape)
+```
+
+
+## Justificación de las decisiones tomadas
+Las decisiones de limpieza y transformación se tomaron con tres objetivos principales:
+
+* Asegurar comparabilidad entre países y continentes.
+* Mantener una cobertura temporal suficientemente amplia.
+* Construir visualizaciones claras para un público no técnico.
+
+El análisis principal del proyecto se basa en una tabla limpia y estructurada para visualizaciones explicativas.
+
+</div>

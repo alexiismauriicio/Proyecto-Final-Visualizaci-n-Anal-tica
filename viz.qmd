@@ -1,0 +1,183 @@
+---
+title: "Análisis y visualizaciones"
+format: html
+jupyter: python3
+---
+
+<div style="text-align: justify;">
+
+```{python}
+import pandas as pd
+import numpy as np
+import altair as alt
+
+alt.data_transformers.disable_max_rows()
+```
+
+```{python}
+
+#| echo: false
+
+df_raw = pd.read_csv("electricity-production-by-source.csv")
+
+fuentes = ["Coal", "Gas", "Oil", "Nuclear", "Hydropower", "Wind", "Solar"]
+
+paises_por_continente = {
+    "Africa": ["South Africa", "Egypt", "Algeria", "Morocco", "Nigeria"],
+    "Asia": ["China", "India", "Japan", "South Korea", "Indonesia"],
+    "Europe": ["Germany", "France", "Spain", "Norway", "Poland"],
+    "North America": ["United States", "Canada", "Mexico", "Cuba", "Dominican Republic"],
+    "South America": ["Brazil", "Argentina", "Chile", "Colombia", "Ecuador"]
+}
+
+paises = [pais for lista in paises_por_continente.values() for pais in lista]
+
+df = df_raw[["Entity", "Year"] + fuentes].copy()
+df = df[(df["Entity"].isin(paises)) & (df["Year"] >= 1990) & (df["Year"] <= 2024)].copy()
+
+mapa_continente = {}
+for continente, lista in paises_por_continente.items():
+    for pais in lista:
+        mapa_continente[pais] = continente
+
+df["Continent"] = df["Entity"].map(mapa_continente)
+df[fuentes] = df[fuentes].fillna(0)
+
+grid = pd.MultiIndex.from_product([paises, range(1990, 2025)], names=["Entity", "Year"]).to_frame(index=False)
+df = grid.merge(df, on=["Entity", "Year"], how="left")
+df["Continent"] = df["Entity"].map(mapa_continente)
+df[fuentes] = df[fuentes].fillna(0)
+
+df["Total_generation"] = df[fuentes].sum(axis=1)
+df["Fossil_generation"] = df["Coal"] + df["Gas"] + df["Oil"]
+df["Low_carbon_generation"] = df["Nuclear"] + df["Hydropower"] + df["Wind"] + df["Solar"]
+df["Dominant_source"] = df[fuentes].idxmax(axis=1)
+
+df_long = df.melt(
+    id_vars=["Entity", "Continent", "Year", "Total_generation", "Fossil_generation", "Low_carbon_generation", "Dominant_source"],
+    value_vars=fuentes,
+    var_name="Source",
+    value_name="Generation_TWh"
+)
+
+df_long["Share"] = np.where(
+    df_long["Total_generation"] > 0,
+    df_long["Generation_TWh"] / df_long["Total_generation"],
+    0
+)
+```
+
+
+## Pregunta 1
+### ¿Qué fuentes energéticas dominan la generación eléctrica en países con trayectorias contrastantes?
+Para responder esta pregunta se seleccionaron cinco países representativos: China, Estados Unidos, Brasil, Francia y Noruega.
+
+```{python}
+paises_ejemplo = ["China", "United States", "Brazil", "France", "Norway"]
+df_q1 = df_long[df_long["Entity"].isin(paises_ejemplo)].copy()
+
+chart1 = alt.Chart(df_q1).mark_area().encode(
+    x=alt.X("Year:O", title="Año"),
+    y=alt.Y("Generation_TWh:Q", title="Generación eléctrica (TWh)", stack="zero"),
+    color=alt.Color("Source:N", title="Fuente"),
+    tooltip=["Entity:N", "Year:O", "Source:N", "Generation_TWh:Q"]
+).properties(
+    width=220,
+    height=180
+).facet(
+    column=alt.Column("Entity:N", title=None)
+)
+
+chart1
+```
+
+**Interpretación**
+
+La composición de la generación eléctrica cambia de manera desigual entre países. China muestra un fuerte predominio del carbón; Estados Unidos refleja una reducción relativa del carbón y un aumento del gas; Brasil y Noruega mantienen una alta presencia de hidroelectricidad; y Francia destaca por la importancia de la energía nuclear.
+
+## Pregunta 2
+### ¿Qué diferencias se observan entre continentes en la evolución de las fuentes eléctricas?
+Para comparar regiones, se agregaron los valores de los países seleccionados dentro de cada continente.
+
+```{python}
+continent_source_year = (
+    df_long.groupby(["Continent", "Year", "Source"], as_index=False)["Generation_TWh"]
+    .sum()
+)
+
+chart2 = alt.Chart(continent_source_year).mark_line().encode(
+    x=alt.X("Year:O", title="Año"),
+    y=alt.Y("Generation_TWh:Q", title="Generación eléctrica (TWh)"),
+    color=alt.Color("Source:N", title="Fuente"),
+    tooltip=["Continent:N", "Year:O", "Source:N", "Generation_TWh:Q"]
+).properties(
+    width=220,
+    height=180
+).facet(
+    column=alt.Column("Continent:N", title=None)
+)
+
+chart2
+```
+
+**Interpretación**
+
+Las trayectorias regionales también son diferentes. Asia concentra gran parte del crecimiento del carbón, mientras Sudamérica presenta una presencia más importante de la hidroelectricidad. Europa muestra una mezcla más diversificada, con participación visible de nuclear, hidro y renovables recientes.
+
+## Pregunta 3
+### ¿Qué países presentan matrices más diversificadas y cuáles dependen más de pocas fuentes?
+
+Para responder esta pregunta se compara la composición relativa de la generación eléctrica en el año 2024. En lugar de observar únicamente valores absolutos, se utiliza la participación de cada fuente dentro del total generado por país. Esto permite distinguir con mayor claridad entre matrices concentradas en una o dos fuentes y matrices más equilibradas.
+
+
+```{python}
+df_2024 = df_long[df_long["Year"] == 2024].copy()
+
+chart3 = alt.Chart(df_2024).mark_bar().encode(
+    x=alt.X("Entity:N", sort="-y", title="País"),
+    y=alt.Y("sum(Share):Q", stack="normalize", title="Participación relativa"),
+    color=alt.Color("Source:N", title="Fuente"),
+    tooltip=["Entity:N", "Source:N", alt.Tooltip("Share:Q", format=".2f")]
+).properties(
+    width=700,
+    height=400
+)
+
+chart3
+```
+
+```{python}
+orden_paises = []
+for continente, lista in paises_por_continente.items():
+    orden_paises.extend(lista)
+df_2024 = df_long[df_long["Year"] == 2024].copy()
+
+heatmap = alt.Chart(df_2024).mark_rect().encode(
+    x=alt.X("Source:N", title="Fuente"),
+    y=alt.Y("Entity:N", sort=orden_paises, title="País"),
+    color=alt.Color("Share:Q", title="Participación", scale=alt.Scale(scheme="blues")),
+    tooltip=[
+        alt.Tooltip("Entity:N", title="País"),
+        alt.Tooltip("Continent:N", title="Continente"),
+        alt.Tooltip("Source:N", title="Fuente"),
+        alt.Tooltip("Share:Q", title="Participación", format=".2%")
+    ]
+).properties(
+    width=500,
+    height=500
+)
+
+heatmap
+```
+
+**Interpretación**
+
+La comparación de 2024 permite distinguir entre matrices altamente concentradas y matrices más diversificadas. En algunos países una o dos fuentes dominan claramente la generación eléctrica, mientras que en otros la producción se reparte de forma más equilibrada entre varias tecnologías.
+
+El heatmap permite comparar de forma compacta la composición relativa de la generación eléctrica en los países analizados. Los tonos más intensos indican una mayor dependencia de una fuente determinada, mientras que una distribución más equilibrada de colores sugiere una matriz más diversificada.
+
+## Conclusión general
+
+El análisis muestra que la generación eléctrica ha cambiado de forma desigual entre los países y continentes analizados. Algunas matrices continúan dominadas por combustibles fósiles, especialmente el carbón, mientras otras mantienen una presencia fuerte de hidroelectricidad o energía nuclear. Además, la solar y la eólica muestran un crecimiento progresivo en los años recientes, aunque con distinta intensidad según el país y la región.
+
+</div>

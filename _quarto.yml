@@ -1,0 +1,27 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "PROYECTO FINAL - VISUALIZACIÓN ANALÍTICA"
+  navbar:
+    background: primary # Cambia el color del navbar
+    left:
+      - href: index.qmd
+        text: Home
+      - href: data_cleaning.qmd
+        text: EDA
+      - href: viz.qmd
+        text: Visualización
+  sidebar:
+    style: "docked" # Mejor vista lateral para sitios con muchos archivos
+    search: true
+    contents: auto
+
+format:
+  html:
+    theme: flatly # Opciones: cosmo, lumen, sandstone, yeti, united, etc.
+    css: styles.css # Para personalizar con CSS propio
+    toc: true
+    toc-depth: 3
+    smooth-scroll: true

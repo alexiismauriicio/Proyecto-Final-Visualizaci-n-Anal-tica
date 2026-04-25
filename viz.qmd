@@ -129,7 +129,11 @@ df_long["Share"] = np.where(
 ### ¿Qué fuentes energéticas dominan la generación eléctrica en países con trayectorias contrastantes?
 Para responder esta pregunta se seleccionaron seis países representativos: China, Estados Unidos, Brasil, Francia, Noruega y Ecuador.
 
+
 ```{python}
+# 1. Definimos la selección vinculada a la leyenda
+selection = alt.selection_point(fields=['Source'], bind='legend')
+
 paises_ejemplo = ["China", "United States", "Brazil", "France", "Norway", "Ecuador"]
 df_q1 = df_long[df_long["Entity"].isin(paises_ejemplo)].copy()
 
@@ -137,10 +141,15 @@ chart1 = alt.Chart(df_q1).mark_area().encode(
     x=alt.X("Year:O", title="Año"),
     y=alt.Y("Generation_TWh:Q", title="Generación eléctrica (TWh)", stack="zero"),
     color=alt.Color("Source:N", title="Fuente"),
+    # 2. Aplicamos opacidad condicional: 1 si está seleccionado, 0.1 si no
+    opacity=alt.condition(selection, alt.value(1), alt.value(0.1)),
     tooltip=["Entity:N", "Year:O", "Source:N", "Generation_TWh:Q"]
 ).properties(
     width=220,
     height=180
+).add_params(
+    # 3. Agregamos el parámetro de selección al gráfico
+    selection
 ).facet(
     column=alt.Column("Entity:N", title=None)
 )
@@ -157,6 +166,9 @@ La composición de la generación eléctrica cambia de manera desigual entre pa�
 Para comparar regiones, se agregaron los valores de los países seleccionados dentro de cada continente.
 
 ```{python}
+# 1. Definimos la selección vinculada a la leyenda
+selection_line = alt.selection_point(fields=['Source'], bind='legend')
+
 continent_source_year = (
     df_long.groupby(["Continent", "Year", "Source"], as_index=False)["Generation_TWh"]
     .sum()
@@ -166,15 +178,21 @@ chart2 = alt.Chart(continent_source_year).mark_line().encode(
     x=alt.X("Year:O", title="Año"),
     y=alt.Y("Generation_TWh:Q", title="Generación eléctrica (TWh)"),
     color=alt.Color("Source:N", title="Fuente"),
+    # 2. Aplicamos la opacidad condicional
+    opacity=alt.condition(selection_line, alt.value(1), alt.value(0.1)),
     tooltip=["Continent:N", "Year:O", "Source:N", "Generation_TWh:Q"]
 ).properties(
     width=220,
     height=180
+).add_params(
+    # 3. Registramos la selección
+    selection_line
 ).facet(
-    column=alt.Column("Continent:N", title=None)
+    column=alt.Column("Continent:N", title=None, header=alt.Header(labelOrient='bottom'))
 )
 
 chart2
+
 ```
 
 **Interpretación**

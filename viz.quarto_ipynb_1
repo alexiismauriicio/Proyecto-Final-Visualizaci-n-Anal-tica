@@ -18,7 +18,7 @@
         "\n",
         "<div style=\"text-align: justify;\">"
       ],
-      "id": "e1d2d35c"
+      "id": "2206a470"
     },
     {
       "cell_type": "code",
@@ -30,7 +30,7 @@
         "\n",
         "alt.data_transformers.disable_max_rows()"
       ],
-      "id": "b8d1509f",
+      "id": "7989c99f",
       "execution_count": null,
       "outputs": []
     },
@@ -88,7 +88,7 @@
         "    0\n",
         ")"
       ],
-      "id": "c7f27557",
+      "id": "bee239b5",
       "execution_count": null,
       "outputs": []
     },
@@ -150,15 +150,15 @@
         "\n",
         "## Pregunta 1\n",
         "### ¿Qué fuentes energéticas dominan la generación eléctrica en países con trayectorias contrastantes?\n",
-        "Para responder esta pregunta se seleccionaron cinco países representativos: China, Estados Unidos, Brasil, Francia y Noruega."
+        "Para responder esta pregunta se seleccionaron seis países representativos: China, Estados Unidos, Brasil, Francia, Noruega y Ecuador."
       ],
-      "id": "9cdf6899"
+      "id": "108399a9"
     },
     {
       "cell_type": "code",
       "metadata": {},
       "source": [
-        "paises_ejemplo = [\"China\", \"United States\", \"Brazil\", \"France\", \"Norway\"]\n",
+        "paises_ejemplo = [\"China\", \"United States\", \"Brazil\", \"France\", \"Norway\", \"Ecuador\"]\n",
         "df_q1 = df_long[df_long[\"Entity\"].isin(paises_ejemplo)].copy()\n",
         "\n",
         "chart1 = alt.Chart(df_q1).mark_area().encode(\n",
@@ -175,7 +175,7 @@
         "\n",
         "chart1"
       ],
-      "id": "b4309b31",
+      "id": "766e2292",
       "execution_count": null,
       "outputs": []
     },
@@ -185,13 +185,13 @@
       "source": [
         "**Interpretación**\n",
         "\n",
-        "La composición de la generación eléctrica cambia de manera desigual entre países. China muestra un fuerte predominio del carbón; Estados Unidos refleja una reducción relativa del carbón y un aumento del gas; Brasil y Noruega mantienen una alta presencia de hidroelectricidad; y Francia destaca por la importancia de la energía nuclear.\n",
+        "La composición de la generación eléctrica cambia de manera desigual entre países. China muestra un fuerte predominio del carbón; Estados Unidos refleja una reducción relativa del carbón y un aumento del gas; Brasil, Noruega y Ecuador mantienen una alta presencia de hidroelectricidad; y Francia destaca por la importancia de la energía nuclear.\n",
         "\n",
         "## Pregunta 2\n",
         "### ¿Qué diferencias se observan entre continentes en la evolución de las fuentes eléctricas?\n",
         "Para comparar regiones, se agregaron los valores de los países seleccionados dentro de cada continente."
       ],
-      "id": "a3832d2f"
+      "id": "138848b7"
     },
     {
       "cell_type": "code",
@@ -216,7 +216,7 @@
         "\n",
         "chart2"
       ],
-      "id": "974d056f",
+      "id": "4d298e5b",
       "execution_count": null,
       "outputs": []
     },
@@ -233,7 +233,7 @@
         "\n",
         "Para responder esta pregunta se compara la composición relativa de la generación eléctrica en el año 2024. En lugar de observar únicamente valores absolutos, se utiliza la participación de cada fuente dentro del total generado por país. Esto permite distinguir con mayor claridad entre matrices concentradas en una o dos fuentes y matrices más equilibradas.\n"
       ],
-      "id": "e8d4e170"
+      "id": "a1ebcc39"
     },
     {
       "cell_type": "code",
@@ -254,7 +254,7 @@
         "\n",
         "chart3"
       ],
-      "id": "4eba5ac8",
+      "id": "bf483a79",
       "execution_count": null,
       "outputs": []
     },
@@ -285,7 +285,7 @@
         "\n",
         "heatmap"
       ],
-      "id": "a53a3d4a",
+      "id": "a801d32a",
       "execution_count": null,
       "outputs": []
     },
@@ -305,7 +305,7 @@
         "\n",
         "</div>"
       ],
-      "id": "f2f74549"
+      "id": "2145b9f7"
     }
   ],
   "metadata": {
